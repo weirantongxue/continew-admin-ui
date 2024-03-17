@@ -34,13 +34,19 @@ import localeRealTimeMonitor from '@/views/demo/visualization/real-time-monitor/
 import localeMessageBox from '@/components/message-box/locale/zh-CN';
 import localeLogin from '@/views/login/locale/zh-CN';
 import localeUserCenter from '@/views/system/user/center/locale/zh-CN';
+import localeItem from '@/views/ai/item/locale/zh-CN';
+import localeMsg from '@/views/ai/msg/locale/zh-CN';
+import localeDrawTask from '@/views/ai/draw/task/locale/zh-CN';
+import localeDrawImg from '@/views/ai/draw/img/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
-  'title': 'ContiNew Admin',
+  'title': 'AI makes the world',
   'menu.dashboard': '仪表盘',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
+  'menu.ai.qa': 'AI问答',
+  'menu.ai.draw': 'AI绘图',
   'menu.system': '系统管理',
   'menu.tool': '系统工具',
   'menu.monitor': '系统监控',
@@ -94,4 +100,9 @@ export default {
   ...localeLogin,
   ...localeUserCenter,
   ...localeSettings,
+
+  ...localeItem,
+  ...localeMsg,
+  ...localeDrawTask,
+  ...localeDrawImg,
 };

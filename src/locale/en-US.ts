@@ -34,13 +34,19 @@ import localeRealTimeMonitor from '@/views/demo/visualization/real-time-monitor/
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 import localeUserCenter from '@/views/system/user/center/locale/en-US';
+import localeItem from '@/views/ai/item/locale/en-US';
+import localeMsg from '@/views/ai/msg/locale/en-US';
+import localeDrawTask from '@/views/ai/draw/task/locale/en-US';
+import localeDrawImg from '@/views/ai/draw/img/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
-  'title': 'ContiNew Admin',
+  'title': 'AI makes the world',
   'menu.dashboard': 'Dashboard',
   'menu.server.dashboard': 'Dashboard-Server',
   'menu.server.workplace': 'Workplace-Server',
+  'menu.ai.qa': 'AiQa QA',
+  'menu.ai.draw': 'Painting tasks',
   'menu.system': 'System management',
   'menu.tool': 'Tool',
   'menu.monitor': 'Monitor',
@@ -94,4 +100,9 @@ export default {
   ...localeLogin,
   ...localeUserCenter,
   ...localeSettings,
+  ...localeItem,
+  ...localeMsg,
+  ...localeDrawTask,
+  ...localeDrawImg,
+  ...locale403,
 };
