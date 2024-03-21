@@ -38,6 +38,8 @@ import localeItem from '@/views/ai/item/locale/en-US';
 import localeMsg from '@/views/ai/msg/locale/en-US';
 import localeDrawTask from '@/views/ai/draw/task/locale/en-US';
 import localeDrawImg from '@/views/ai/draw/img/locale/en-US';
+import localeMode from '@/views/ai/model/locale/en-US';
+import localeModelScript from '@/views/ai/modelScript/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -47,6 +49,7 @@ export default {
   'menu.server.workplace': 'Workplace-Server',
   'menu.ai.qa': 'AiQa QA',
   'menu.ai.draw': 'Painting tasks',
+  'menu.ai.mode': '模型管理',
   'menu.system': 'System management',
   'menu.tool': 'Tool',
   'menu.monitor': 'Monitor',
@@ -105,4 +108,8 @@ export default {
   ...localeDrawTask,
   ...localeDrawImg,
   ...locale403,
+
+  ...localeMode,
+  ...localeModelScript,
+
 };

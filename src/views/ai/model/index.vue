@@ -1,14 +1,13 @@
 <script lang="ts" setup>
   import {
-    DataRecord,
-    ListParam,
-    list,
-    get,
     add,
-    update,
+    DataRecord,
     del,
-    // eslint-disable-next-line import/no-unresolved
-  } from '@/api/ai/drawTask';
+    get,
+    list,
+    ListParam,
+    update,
+  } from '@/api/ai/model';
   import checkPermission from '@/utils/permission';
 
   const { proxy } = getCurrentInstance() as any;
@@ -35,12 +34,11 @@
   const data = reactive({
     // 查询参数
     queryParams: {
-      taskId: undefined,
-      prompt: undefined,
-      nonce: undefined,
-      state: undefined,
-      createTime: undefined,
+      name: undefined,
+      modelType: undefined,
+      status: undefined,
       createUser: undefined,
+      createTime: undefined,
       page: 1,
       size: 10,
       sort: ['createTime,desc'],
@@ -49,12 +47,13 @@
     form: {} as DataRecord,
     // 表单验证规则
     rules: {
-      taskId: [{ required: true, message: '任务id不能为空' }],
-      prompt: [{ required: true, message: '问题不能为空' }],
-      nonce: [{ required: true, message: '传递id不能为空' }],
-      state: [{ required: true, message: '任务状态success不能为空' }],
-      createTime: [{ required: true, message: '创建时间不能为空' }],
-      createUser: [{ required: true, message: '创建人不能为空' }],
+      name: [{ required: true, message: '模型名称不能为空' }],
+      modelType: [
+        { required: true, message: '模型类型,1:大语言模型,2:文生图不能为空' },
+      ],
+      url: [{ required: true, message: '模型地址不能为空' }],
+      sort: [{ required: true, message: '排序值不能为空' }],
+      status: [{ required: true, message: '状态（1：启用；2：禁用）不能为空' }],
     },
   });
   const { queryParams, form, rules } = toRefs(data);
@@ -78,13 +77,34 @@
   getList();
 
   /**
+   * 打开新增对话框
+   */
+  const toAdd = () => {
+    reset();
+    title.value = '新增AI模型';
+    visible.value = true;
+  };
+
+  /**
+   * 打开修改对话框
+   *
+   * @param id ID
+   */
+  const toUpdate = (id: string) => {
+    reset();
+    get(id).then((res) => {
+      form.value = res.data;
+      title.value = '修改AI模型';
+      visible.value = true;
+    });
+  };
+
+  /**
    * 重置表单
    */
   const reset = () => {
-    form.value = {
-      // TODO 待补充需要重置的字段默认值，详情请参考其他模块 index.vue
-    };
-    formRef.value.resetFields();
+    form.value = {};
+    formRef.value?.resetFields();
   };
 
   /**
@@ -192,7 +212,7 @@
     if (exportLoading.value) return;
     exportLoading.value = true;
     proxy
-      .download('/ai/drawTask/export', { ...queryParams.value }, '绘图任务数据')
+      .download('/ai/model/export', { ...queryParams.value }, 'AI模型数据')
       .finally(() => {
         exportLoading.value = false;
       });
@@ -236,59 +256,41 @@
 
 <script lang="ts">
   export default {
-    name: 'DrawTask',
+    name: 'Model',
   };
 </script>
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.draw', 'menu.ai.draw.task.list']" />
-    <a-card class="general-card" :title="$t('menu.ai.draw.task.list')">
+    <Breadcrumb :items="['menu.ai.model.list', 'menu.ai.model.list']" />
+    <a-card class="general-card" :title="$t('menu.ai.model.list')">
       <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
         <div v-if="showQuery" class="header-query">
           <a-form ref="queryFormRef" :model="queryParams" layout="inline">
-            <a-form-item field="taskId" hide-label>
+            <a-form-item field="name" hide-label>
               <a-input
-                v-model="queryParams.taskId"
-                placeholder="输入任务id搜索"
+                v-model="queryParams.name"
+                placeholder="输入模型名称搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
               />
             </a-form-item>
-            <a-form-item field="prompt" hide-label>
+            <a-form-item field="modelType" hide-label>
               <a-input
-                v-model="queryParams.prompt"
-                placeholder="输入问题搜索"
+                v-model="queryParams.modelType"
+                placeholder="输入模型类型,1:大语言模型,2:文生图搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
               />
             </a-form-item>
-            <a-form-item field="nonce" hide-label>
+            <a-form-item field="status" hide-label>
               <a-input
-                v-model="queryParams.nonce"
-                placeholder="输入传递id搜索"
-                allow-clear
-                style="width: 150px"
-                @press-enter="handleQuery"
-              />
-            </a-form-item>
-            <a-form-item field="state" hide-label>
-              <a-input
-                v-model="queryParams.state"
-                placeholder="输入任务状态success搜索"
-                allow-clear
-                style="width: 150px"
-                @press-enter="handleQuery"
-              />
-            </a-form-item>
-            <a-form-item field="createTime" hide-label>
-              <a-input
-                v-model="queryParams.createTime"
-                placeholder="输入创建时间搜索"
+                v-model="queryParams.status"
+                placeholder="输入状态（1：启用；2：禁用）搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -298,6 +300,15 @@
               <a-input
                 v-model="queryParams.createUser"
                 placeholder="输入创建人搜索"
+                allow-clear
+                style="width: 150px"
+                @press-enter="handleQuery"
+              />
+            </a-form-item>
+            <a-form-item field="createTime" hide-label>
+              <a-input
+                v-model="queryParams.createTime"
+                placeholder="输入创建时间搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -321,7 +332,24 @@
             <a-col :span="12">
               <a-space>
                 <a-button
-                  v-permission="['ai:drawTask:delete']"
+                  v-permission="['ai:model:add']"
+                  type="primary"
+                  @click="toAdd"
+                >
+                  <template #icon><icon-plus /></template>新增
+                </a-button>
+                <a-button
+                  v-permission="['ai:model:update']"
+                  type="primary"
+                  status="success"
+                  :disabled="single"
+                  :title="single ? '请选择一条要修改的数据' : ''"
+                  @click="toUpdate(ids[0])"
+                >
+                  <template #icon><icon-edit /></template>修改
+                </a-button>
+                <a-button
+                  v-permission="['ai:model:delete']"
                   type="primary"
                   status="danger"
                   :disabled="multiple"
@@ -331,7 +359,7 @@
                   <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                  v-permission="['ai:drawTask:export']"
+                  v-permission="['ai:model:export']"
                   :loading="exportLoading"
                   type="primary"
                   status="warning"
@@ -381,26 +409,43 @@
               <a-link @click="toDetail(record.id)">{{ record.id }}</a-link>
             </template>
           </a-table-column>
-          <a-table-column title="任务id" data-index="taskId" />
-          <a-table-column title="问题" data-index="prompt" />
-          <a-table-column title="拼接图" data-index="mosaicImg" />
-          <a-table-column title="传递id" data-index="nonce" />
-          <a-table-column title="任务状态success" data-index="state" />
-          <a-table-column title="创建时间" data-index="createTime" />
-          <a-table-column title="创建人" data-index="createUser" />
+          <a-table-column title="模型名称" data-index="name" />
           <a-table-column
-            v-if="checkPermission(['ai:drawTask:update', 'ai:drawTask:delete'])"
+            title="模型类型,1:大语言模型,2:文生图"
+            data-index="modelType"
+          />
+          <a-table-column title="模型图标" data-index="coverUrl" />
+          <a-table-column title="模型地址" data-index="url" />
+          <a-table-column title="描述" data-index="introduction" />
+          <a-table-column title="排序值" data-index="sort" />
+          <a-table-column
+            title="状态（1：启用；2：禁用）"
+            data-index="status"
+          />
+          <a-table-column title="创建人" data-index="createUser" />
+          <a-table-column title="创建时间" data-index="createTime" />
+          <a-table-column
+            v-if="checkPermission(['ai:model:update', 'ai:model:delete'])"
             title="操作"
             align="center"
           >
             <template #cell="{ record }">
+              <a-button
+                v-permission="['ai:model:update']"
+                type="text"
+                size="small"
+                title="修改"
+                @click="toUpdate(record.id)"
+              >
+                <template #icon><icon-edit /></template>修改
+              </a-button>
               <a-popconfirm
                 content="是否确定删除该数据？"
                 type="warning"
                 @ok="handleDelete([record.id])"
               >
                 <a-button
-                  v-permission="['ai:drawTask:delete']"
+                  v-permission="['ai:model:delete']"
                   type="text"
                   size="small"
                   title="删除"
@@ -426,31 +471,39 @@
         @cancel="handleCancel"
       >
         <a-form ref="formRef" :model="form" :rules="rules" size="large">
-          <a-form-item label="任务id" field="taskId">
-            <a-input v-model="form.taskId" placeholder="请输入任务id" />
+          <a-form-item label="模型名称" field="name">
+            <a-input v-model="form.name" placeholder="请输入模型名称" />
           </a-form-item>
-          <a-form-item label="问题" field="prompt">
-            <a-input v-model="form.prompt" placeholder="请输入问题" />
+          <a-form-item label="模型类型,1:大语言模型,2:文生图" field="modelType">
+            <a-input
+              v-model="form.modelType"
+              placeholder="请输入模型类型,1:大语言模型,2:文生图"
+            />
           </a-form-item>
-          <a-form-item label="拼接图" field="mosaicImg">
-            <a-input v-model="form.mosaicImg" placeholder="请输入拼接图" />
+          <a-form-item label="模型图标" field="coverUrl">
+            <a-input v-model="form.coverUrl" placeholder="请输入模型图标" />
           </a-form-item>
-          <a-form-item label="传递id" field="nonce">
-            <a-input v-model="form.nonce" placeholder="请输入传递id" />
+          <a-form-item label="模型地址" field="url">
+            <a-input v-model="form.url" placeholder="请输入模型地址" />
           </a-form-item>
-          <a-form-item label="任务状态success" field="state"> </a-form-item>
-          <a-form-item label="创建时间" field="createTime">
-            <a-input v-model="form.createTime" placeholder="请输入创建时间" />
+          <a-form-item label="描述" field="introduction">
+            <a-input v-model="form.introduction" placeholder="请输入描述" />
           </a-form-item>
-          <a-form-item label="创建人" field="createUser">
-            <a-input v-model="form.createUser" placeholder="请输入创建人" />
+          <a-form-item label="排序值" field="sort">
+            <a-input v-model="form.sort" placeholder="请输入排序值" />
+          </a-form-item>
+          <a-form-item label="状态（1：启用；2：禁用）" field="status">
+            <a-input
+              v-model="form.status"
+              placeholder="请输入状态（1：启用；2：禁用）"
+            />
           </a-form-item>
         </a-form>
       </a-modal>
 
       <!-- 详情区域 -->
       <a-drawer
-        title="绘图任务详情"
+        title="AI模型详情"
         :visible="detailVisible"
         :width="580"
         :footer="false"
@@ -465,35 +518,59 @@
             </a-skeleton>
             <span v-else>{{ dataDetail.id }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="任务id">
+          <a-descriptions-item label="模型名称">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.taskId }}</span>
+            <span v-else>{{ dataDetail.name }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="问题">
+          <a-descriptions-item label="模型类型,1:大语言模型,2:文生图">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.prompt }}</span>
+            <span v-else>{{ dataDetail.modelType }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="拼接图">
+          <a-descriptions-item label="模型图标">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.mosaicImg }}</span>
+            <span v-else>{{ dataDetail.coverUrl }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="传递id">
+          <a-descriptions-item label="模型地址">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.nonce }}</span>
+            <span v-else>{{ dataDetail.url }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="任务状态success">
+          <a-descriptions-item label="描述">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.state }}</span>
+            <span v-else>{{ dataDetail.introduction }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="排序值">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.sort }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="状态（1：启用；2：禁用）">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.status }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="是否删除: 0=否, 1=是">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.isDelete }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="创建人">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.createUserString }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建时间">
             <a-skeleton v-if="detailLoading" :animation="true">
@@ -501,11 +578,17 @@
             </a-skeleton>
             <span v-else>{{ dataDetail.createTime }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="创建人">
+          <a-descriptions-item label="修改人">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.createUserString }}</span>
+            <span v-else>{{ dataDetail.updateUserString }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="修改时间">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.updateTime }}</span>
           </a-descriptions-item>
         </a-descriptions>
       </a-drawer>

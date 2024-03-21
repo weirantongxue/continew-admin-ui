@@ -1,67 +1,67 @@
 <script lang="ts" setup>
-import {
-  DataRecord,
-  ListParam,
-  list,
-  get,
-  add,
-  update,
-  del,
-// eslint-disable-next-line import/no-unresolved
-} from '@/api/ai/drawImg';
-import checkPermission from '@/utils/permission';
+  import {
+    DataRecord,
+    ListParam,
+    list,
+    get,
+    add,
+    update,
+    del,
+    // eslint-disable-next-line import/no-unresolved
+  } from '@/api/ai/drawImg';
+  import checkPermission from '@/utils/permission';
 
-const { proxy } = getCurrentInstance() as any;
-// const { dis_enable_status_enum } = proxy.useDict('dis_enable_status_enum');
+  const { proxy } = getCurrentInstance() as any;
+  // const { dis_enable_status_enum } = proxy.useDict('dis_enable_status_enum');
 
-const queryFormRef = ref();
-const formRef = ref();
-const dataList = ref<DataRecord[]>([]);
-const dataDetail = ref<DataRecord>({
-  // TODO 待补充详情字段默认值
-});
-const total = ref(0);
-const ids = ref<Array<string>>([]);
-const title = ref('');
-const single = ref(true);
-const multiple = ref(true);
-const showQuery = ref(true);
-const loading = ref(false);
-const detailLoading = ref(false);
-const exportLoading = ref(false);
-const visible = ref(false);
-const detailVisible = ref(false);
+  const queryFormRef = ref();
+  const formRef = ref();
+  const dataList = ref<DataRecord[]>([]);
+  const dataDetail = ref<DataRecord>({
+    // TODO 待补充详情字段默认值
+  });
+  const total = ref(0);
+  const ids = ref<Array<string>>([]);
+  const title = ref('');
+  const single = ref(true);
+  const multiple = ref(true);
+  const showQuery = ref(true);
+  const loading = ref(false);
+  const detailLoading = ref(false);
+  const exportLoading = ref(false);
+  const visible = ref(false);
+  const detailVisible = ref(false);
 
-const data = reactive({
-  // 查询参数
-  queryParams: {
-    taskId: undefined,
-    createTime: undefined,
-    createUser: undefined,
-    page: 1,
-    size: 10,
-    sort: ['createTime,desc'],
-  },
-  // 表单数据
-  form: {} as DataRecord,
-  // 表单验证规则
-  rules: {
-    taskId: [{ required: true, message: '任务id不能为空' }],
-    imageUrl: [{ required: true, message: '图片地址不能为空' }],
-    createTime: [{ required: true, message: '创建时间不能为空' }],
-    createUser: [{ required: true, message: '创建人不能为空' }],
-  },
-});
-const { queryParams, form, rules } = toRefs(data);
+  const data = reactive({
+    // 查询参数
+    queryParams: {
+      taskId: undefined,
+      createTime: undefined,
+      createUser: undefined,
+      page: 1,
+      size: 10,
+      sort: ['createTime,desc'],
+    },
+    // 表单数据
+    form: {} as DataRecord,
+    // 表单验证规则
+    rules: {
+      taskId: [{ required: true, message: '任务id不能为空' }],
+      imageUrl: [{ required: true, message: '图片地址不能为空' }],
+      createTime: [{ required: true, message: '创建时间不能为空' }],
+      createUser: [{ required: true, message: '创建人不能为空' }],
+    },
+  });
+  const { queryParams, form, rules } = toRefs(data);
 
-/**
- * 查询列表
- *
- * @param params 查询参数
- */
-const getList = (params: ListParam = { ...queryParams.value }) => {
-  loading.value = true;
-  list(params)
+  /**
+   * 查询列表
+   *
+   * @param params 查询参数
+   */
+  const getList = (params: ListParam = { ...queryParams.value }) => {
+    loading.value = true;
+    list(params)
       .then((res) => {
         dataList.value = res.data.list;
         total.value = res.data.total;
@@ -69,172 +69,170 @@ const getList = (params: ListParam = { ...queryParams.value }) => {
       .finally(() => {
         loading.value = false;
       });
-};
-getList();
-
-
-
-/**
- * 重置表单
- */
-const reset = () => {
-  form.value = {
-    // TODO 待补充需要重置的字段默认值，详情请参考其他模块 index.vue
   };
-  formRef.value.resetFields();
-};
+  getList();
 
-/**
- * 取消
- */
-const handleCancel = () => {
-  visible.value = false;
-  formRef.value.resetFields();
-};
+  /**
+   * 重置表单
+   */
+  const reset = () => {
+    form.value = {
+      // TODO 待补充需要重置的字段默认值，详情请参考其他模块 index.vue
+    };
+    formRef.value.resetFields();
+  };
 
-/**
- * 确定
- */
-const handleOk = () => {
-  formRef.value.validate((valid: any) => {
-    if (!valid) {
-      if (form.value.id !== undefined) {
-        update(form.value, form.value.id).then((res) => {
-          handleCancel();
-          getList();
-          proxy.$message.success(res.msg);
-        });
-      } else {
-        add(form.value).then((res) => {
-          handleCancel();
-          getList();
-          proxy.$message.success(res.msg);
-        });
+  /**
+   * 取消
+   */
+  const handleCancel = () => {
+    visible.value = false;
+    formRef.value.resetFields();
+  };
+
+  /**
+   * 确定
+   */
+  const handleOk = () => {
+    formRef.value.validate((valid: any) => {
+      if (!valid) {
+        if (form.value.id !== undefined) {
+          update(form.value, form.value.id).then((res) => {
+            handleCancel();
+            getList();
+            proxy.$message.success(res.msg);
+          });
+        } else {
+          add(form.value).then((res) => {
+            handleCancel();
+            getList();
+            proxy.$message.success(res.msg);
+          });
+        }
       }
-    }
-  });
-};
+    });
+  };
 
-/**
- * 查看详情
- *
- * @param id ID
- */
-const toDetail = async (id: string) => {
-  if (detailLoading.value) return;
-  detailLoading.value = true;
-  detailVisible.value = true;
-  get(id)
+  /**
+   * 查看详情
+   *
+   * @param id ID
+   */
+  const toDetail = async (id: string) => {
+    if (detailLoading.value) return;
+    detailLoading.value = true;
+    detailVisible.value = true;
+    get(id)
       .then((res) => {
         dataDetail.value = res.data;
       })
       .finally(() => {
         detailLoading.value = false;
       });
-};
+  };
 
-/**
- * 关闭详情
- */
-const handleDetailCancel = () => {
-  detailVisible.value = false;
-};
+  /**
+   * 关闭详情
+   */
+  const handleDetailCancel = () => {
+    detailVisible.value = false;
+  };
 
-/**
- * 批量删除
- */
-const handleBatchDelete = () => {
-  if (ids.value.length === 0) {
-    proxy.$message.info('请选择要删除的数据');
-  } else {
-    proxy.$modal.warning({
-      title: '警告',
-      titleAlign: 'start',
-      content: `是否确定删除所选的${ids.value.length}条数据？`,
-      hideCancel: false,
-      onOk: () => {
-        handleDelete(ids.value);
-      },
+  /**
+   * 批量删除
+   */
+  const handleBatchDelete = () => {
+    if (ids.value.length === 0) {
+      proxy.$message.info('请选择要删除的数据');
+    } else {
+      proxy.$modal.warning({
+        title: '警告',
+        titleAlign: 'start',
+        content: `是否确定删除所选的${ids.value.length}条数据？`,
+        hideCancel: false,
+        onOk: () => {
+          handleDelete(ids.value);
+        },
+      });
+    }
+  };
+
+  /**
+   * 删除
+   *
+   * @param ids ID 列表
+   */
+  const handleDelete = (ids: Array<string>) => {
+    del(ids).then((res) => {
+      proxy.$message.success(res.msg);
+      getList();
     });
-  }
-};
+  };
 
-/**
- * 删除
- *
- * @param ids ID 列表
- */
-const handleDelete = (ids: Array<string>) => {
-  del(ids).then((res) => {
-    proxy.$message.success(res.msg);
-    getList();
-  });
-};
+  /**
+   * 已选择的数据行发生改变时触发
+   *
+   * @param rowKeys ID 列表
+   */
+  const handleSelectionChange = (rowKeys: Array<any>) => {
+    ids.value = rowKeys;
+    single.value = rowKeys.length !== 1;
+    multiple.value = !rowKeys.length;
+  };
 
-/**
- * 已选择的数据行发生改变时触发
- *
- * @param rowKeys ID 列表
- */
-const handleSelectionChange = (rowKeys: Array<any>) => {
-  ids.value = rowKeys;
-  single.value = rowKeys.length !== 1;
-  multiple.value = !rowKeys.length;
-};
-
-/**
- * 导出
- */
-const handleExport = () => {
-  if (exportLoading.value) return;
-  exportLoading.value = true;
-  proxy
+  /**
+   * 导出
+   */
+  const handleExport = () => {
+    if (exportLoading.value) return;
+    exportLoading.value = true;
+    proxy
       .download('/ai/drawImg/export', { ...queryParams.value }, '绘图素材数据')
       .finally(() => {
         exportLoading.value = false;
       });
-};
+  };
 
-/**
- * 查询
- */
-const handleQuery = () => {
-  getList();
-};
+  /**
+   * 查询
+   */
+  const handleQuery = () => {
+    getList();
+  };
 
-/**
- * 重置
- */
-const resetQuery = () => {
-  queryFormRef.value.resetFields();
-  handleQuery();
-};
+  /**
+   * 重置
+   */
+  const resetQuery = () => {
+    queryFormRef.value.resetFields();
+    handleQuery();
+  };
 
-/**
- * 切换页码
- *
- * @param current 页码
- */
-const handlePageChange = (current: number) => {
-  queryParams.value.page = current;
-  getList();
-};
+  /**
+   * 切换页码
+   *
+   * @param current 页码
+   */
+  const handlePageChange = (current: number) => {
+    queryParams.value.page = current;
+    getList();
+  };
 
-/**
- * 切换每页条数
- *
- * @param pageSize 每页条数
- */
-const handlePageSizeChange = (pageSize: number) => {
-  queryParams.value.size = pageSize;
-  getList();
-};
+  /**
+   * 切换每页条数
+   *
+   * @param pageSize 每页条数
+   */
+  const handlePageSizeChange = (pageSize: number) => {
+    queryParams.value.size = pageSize;
+    getList();
+  };
 </script>
 
 <script lang="ts">
-export default {
-  name: 'DrawImg',
-};
+  export default {
+    name: 'DrawImg',
+  };
 </script>
 
 <template>
@@ -248,29 +246,29 @@ export default {
           <a-form ref="queryFormRef" :model="queryParams" layout="inline">
             <a-form-item field="taskId" hide-label>
               <a-input
-                  v-model="queryParams.taskId"
-                  placeholder="输入任务id搜索"
-                  allow-clear
-                  style="width: 150px"
-                  @press-enter="handleQuery"
+                v-model="queryParams.taskId"
+                placeholder="输入任务id搜索"
+                allow-clear
+                style="width: 150px"
+                @press-enter="handleQuery"
               />
             </a-form-item>
             <a-form-item field="createTime" hide-label>
               <a-input
-                  v-model="queryParams.createTime"
-                  placeholder="输入创建时间搜索"
-                  allow-clear
-                  style="width: 150px"
-                  @press-enter="handleQuery"
+                v-model="queryParams.createTime"
+                placeholder="输入创建时间搜索"
+                allow-clear
+                style="width: 150px"
+                @press-enter="handleQuery"
               />
             </a-form-item>
             <a-form-item field="createUser" hide-label>
               <a-input
-                  v-model="queryParams.createUser"
-                  placeholder="输入创建人搜索"
-                  allow-clear
-                  style="width: 150px"
-                  @press-enter="handleQuery"
+                v-model="queryParams.createUser"
+                placeholder="输入创建人搜索"
+                allow-clear
+                style="width: 150px"
+                @press-enter="handleQuery"
               />
             </a-form-item>
             <a-form-item hide-label>
@@ -290,23 +288,22 @@ export default {
           <a-row>
             <a-col :span="12">
               <a-space>
-                
                 <a-button
-                    v-permission="['ai:drawImg:delete']"
-                    type="primary"
-                    status="danger"
-                    :disabled="multiple"
-                    :title="multiple ? '请选择要删除的数据' : ''"
-                    @click="handleBatchDelete"
+                  v-permission="['ai:drawImg:delete']"
+                  type="primary"
+                  status="danger"
+                  :disabled="multiple"
+                  :title="multiple ? '请选择要删除的数据' : ''"
+                  @click="handleBatchDelete"
                 >
                   <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                    v-permission="['ai:drawImg:export']"
-                    :loading="exportLoading"
-                    type="primary"
-                    status="warning"
-                    @click="handleExport"
+                  v-permission="['ai:drawImg:export']"
+                  :loading="exportLoading"
+                  type="primary"
+                  status="warning"
+                  @click="handleExport"
                 >
                   <template #icon><icon-download /></template>导出
                 </a-button>
@@ -314,8 +311,8 @@ export default {
             </a-col>
             <a-col :span="12">
               <right-toolbar
-                  v-model:show-query="showQuery"
-                  @refresh="getList"
+                v-model:show-query="showQuery"
+                @refresh="getList"
               />
             </a-col>
           </a-row>
@@ -324,27 +321,27 @@ export default {
 
       <!-- 列表区域 -->
       <a-table
-          row-key="id"
-          :data="dataList"
-          :loading="loading"
-          :row-selection="{
+        row-key="id"
+        :data="dataList"
+        :loading="loading"
+        :row-selection="{
           type: 'checkbox',
           showCheckedAll: true,
           onlyCurrent: false,
         }"
-          :pagination="{
+        :pagination="{
           showTotal: true,
           showPageSize: true,
           total: total,
           current: queryParams.page,
         }"
-          :bordered="false"
-          column-resizable
-          stripe
-          size="large"
-          @page-change="handlePageChange"
-          @page-size-change="handlePageSizeChange"
-          @selection-change="handleSelectionChange"
+        :bordered="false"
+        column-resizable
+        stripe
+        size="large"
+        @page-change="handlePageChange"
+        @page-size-change="handlePageSizeChange"
+        @selection-change="handleSelectionChange"
       >
         <template #columns>
           <a-table-column title="主键" data-index="id">
@@ -357,22 +354,22 @@ export default {
           <a-table-column title="创建时间" data-index="createTime" />
           <a-table-column title="创建人" data-index="createUser" />
           <a-table-column
-              v-if="checkPermission(['ai:drawImg:update', 'ai:drawImg:delete'])"
-              title="操作"
-              align="center"
+            v-if="checkPermission(['ai:drawImg:update', 'ai:drawImg:delete'])"
+            title="操作"
+            align="center"
           >
             <template #cell="{ record }">
               <a-popconfirm
-                  content="是否确定删除该数据？"
-                  type="warning"
-                  @ok="handleDelete([record.id])"
+                content="是否确定删除该数据？"
+                type="warning"
+                @ok="handleDelete([record.id])"
               >
                 <a-button
-                    v-permission="['ai:drawImg:delete']"
-                    type="text"
-                    size="small"
-                    title="删除"
-                    :disabled="record.disabled"
+                  v-permission="['ai:drawImg:delete']"
+                  type="text"
+                  size="small"
+                  title="删除"
+                  :disabled="record.disabled"
                 >
                   <template #icon><icon-delete /></template>删除
                 </a-button>
@@ -384,14 +381,14 @@ export default {
 
       <!-- 表单区域 -->
       <a-modal
-          :title="title"
-          :visible="visible"
-          :mask-closable="false"
-          :esc-to-close="false"
-          unmount-on-close
-          render-to-body
-          @ok="handleOk"
-          @cancel="handleCancel"
+        :title="title"
+        :visible="visible"
+        :mask-closable="false"
+        :esc-to-close="false"
+        unmount-on-close
+        render-to-body
+        @ok="handleOk"
+        @cancel="handleCancel"
       >
         <a-form ref="formRef" :model="form" :rules="rules" size="large">
           <a-form-item label="任务id" field="taskId">
@@ -411,13 +408,13 @@ export default {
 
       <!-- 详情区域 -->
       <a-drawer
-          title="绘图素材详情"
-          :visible="detailVisible"
-          :width="580"
-          :footer="false"
-          unmount-on-close
-          render-to-body
-          @cancel="handleDetailCancel"
+        title="绘图素材详情"
+        :visible="detailVisible"
+        :width="580"
+        :footer="false"
+        unmount-on-close
+        render-to-body
+        @cancel="handleDetailCancel"
       >
         <a-descriptions :column="2" bordered size="large">
           <a-descriptions-item label="主键">

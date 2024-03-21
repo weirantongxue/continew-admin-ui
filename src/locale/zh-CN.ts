@@ -38,6 +38,8 @@ import localeItem from '@/views/ai/item/locale/zh-CN';
 import localeMsg from '@/views/ai/msg/locale/zh-CN';
 import localeDrawTask from '@/views/ai/draw/task/locale/zh-CN';
 import localeDrawImg from '@/views/ai/draw/img/locale/zh-CN';
+import localeMode from '@/views/ai/model/locale/zh-CN';
+import localeModelScript from '@/views/ai/modelScript/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -47,6 +49,7 @@ export default {
   'menu.server.workplace': '工作台-服务端',
   'menu.ai.qa': 'AI问答',
   'menu.ai.draw': 'AI绘图',
+  'menu.ai.mode': '模型管理',
   'menu.system': '系统管理',
   'menu.tool': '系统工具',
   'menu.monitor': '系统监控',
@@ -105,4 +108,8 @@ export default {
   ...localeMsg,
   ...localeDrawTask,
   ...localeDrawImg,
+
+  ...localeMode,
+  ...localeModelScript,
+
 };
