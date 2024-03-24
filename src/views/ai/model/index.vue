@@ -41,7 +41,7 @@
       createTime: undefined,
       page: 1,
       size: 10,
-      sort: ['createTime,desc'],
+      sort: ['sort,asc'],
     },
     // 表单数据
     form: {} as DataRecord,
