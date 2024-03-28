@@ -40,6 +40,8 @@ import localeDrawTask from '@/views/ai/draw/task/locale/en-US';
 import localeDrawImg from '@/views/ai/draw/img/locale/en-US';
 import localeMode from '@/views/ai/model/locale/en-US';
 import localeModelScript from '@/views/ai/modelScript/locale/en-US';
+import localeAiOrder from '@/views/ai/order/locale/en-US';
+import localePayInfo from '@/views/ai/pay/PaymentInfo/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -50,6 +52,9 @@ export default {
   'menu.ai.qa': 'AiQa QA',
   'menu.ai.draw': 'Painting tasks',
   'menu.ai.mode': '模型管理',
+  'menu.ai.order': 'order',
+  'menu.ai.pay': '支付管理',
+  'menu.ai.pay.info': '支付信息列表',
   'menu.system': 'System management',
   'menu.tool': 'Tool',
   'menu.monitor': 'Monitor',
@@ -111,5 +116,7 @@ export default {
 
   ...localeMode,
   ...localeModelScript,
+  ...localeAiOrder,
+  ...localePayInfo,
 
 };
