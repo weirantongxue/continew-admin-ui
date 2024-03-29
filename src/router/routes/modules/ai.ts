@@ -67,6 +67,15 @@ const AI: AppRouteRecordRaw = {
         requiresAuth: true,
       },
     },
+    {
+      name: 'Product',
+      path: '/ai/product',
+      component: () => import('@/views/ai/product/index.vue'),
+      meta: {
+        locale: 'menu.ai.product.list',
+        requiresAuth: true,
+      },
+    },
   ],
 };
 
