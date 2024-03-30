@@ -51,7 +51,7 @@ export default {
   'menu.server.workplace': 'Workplace-Server',
   'menu.ai.qa': 'AiQa QA',
   'menu.ai.draw': 'Painting tasks',
-  'menu.ai.mode': '模型管理',
+  'menu.ai.model': 'Model',
   'menu.ai.order': 'order',
   'menu.ai.pay': '支付管理',
   'menu.ai.pay.info': '支付信息列表',

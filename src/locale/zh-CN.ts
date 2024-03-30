@@ -41,7 +41,7 @@ import localeDrawImg from '@/views/ai/draw/img/locale/zh-CN';
 import localeMode from '@/views/ai/model/locale/zh-CN';
 import localeModelScript from '@/views/ai/modelScript/locale/zh-CN';
 import localeAiOrder from '@/views/ai/order/locale/zh-CN';
-import localePayInfo from '@/views/ai/pay/PaymentInfo/locale/zh-CN';
+import localePay from '@/views/ai/pay/PaymentInfo/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -51,10 +51,9 @@ export default {
   'menu.server.workplace': '工作台-服务端',
   'menu.ai.qa': 'AI问答',
   'menu.ai.draw': 'AI绘图',
-  'menu.ai.mode': '模型管理',
-  'menu.ai.order': '订单列表',
+  'menu.ai.model': 'AI模型',
+  'menu.ai.order': '订单管理',
   'menu.ai.pay': '支付管理',
-  'menu.ai.pay.info': '支付信息列表',
   'menu.system': '系统管理',
   'menu.tool': '系统工具',
   'menu.monitor': '系统监控',
@@ -117,6 +116,6 @@ export default {
   ...localeMode,
   ...localeModelScript,
   ...localeAiOrder,
-  ...localePayInfo,
+  ...localePay,
 
 };

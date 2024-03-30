@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/paymentinfo';
+  from '@/api/ai/paymentInfo';
 import checkPermission from '@/utils/permission';
 
 const { proxy } = getCurrentInstance() as any;
@@ -250,7 +250,7 @@ export default {
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.pay.info', 'menu.ai.pay.info.list']" />
+    <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.info.list']" />
     <a-card class="general-card" :title="$t('menu.ai.pay.info.list')">
       <!-- 头部区域 -->
       <div class="header">

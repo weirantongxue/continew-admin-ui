@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/orderinfo';
+  from '@/api/ai/orderInfo';
 import checkPermission from '@/utils/permission';
 
 const {proxy} = getCurrentInstance() as any;

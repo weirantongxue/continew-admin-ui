@@ -262,7 +262,7 @@
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.model.list', 'menu.ai.model.list']" />
+    <Breadcrumb :items="['menu.ai.model', 'menu.ai.model.list']" />
     <a-card class="general-card" :title="$t('menu.ai.model.list')">
       <!-- 头部区域 -->
       <div class="header">

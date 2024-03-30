@@ -1,3 +1,3 @@
 export default {
-  'menu.ai.mode.list': '模型列表',
+  'menu.ai.model.list': '模型预设脚本',
 };

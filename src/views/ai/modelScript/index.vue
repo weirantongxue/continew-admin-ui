@@ -7,7 +7,7 @@
     list,
     ListParam,
     update,
-  } from '@/api/ai/modelscript';
+  } from '@/api/ai/modelScript';
   import checkPermission from '@/utils/permission';
 
   const { proxy } = getCurrentInstance() as any;
@@ -264,7 +264,7 @@
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.model.list', 'menu.ai.modelScript.list']" />
+    <Breadcrumb :items="['menu.ai.model', 'menu.ai.modelScript.list']" />
     <a-card class="general-card" :title="$t('menu.ai.modelScript.list')">
       <!-- 头部区域 -->
       <div class="header">

@@ -30,6 +30,24 @@ const AI: AppRouteRecordRaw = {
         requiresAuth: true,
       },
     },
+    {
+      name: 'Model',
+      path: '/ai/model',
+      component: () => import('@/views/ai/model/index.vue'),
+      meta: {
+        locale: 'menu.ai.model.list',
+        requiresAuth: true,
+      },
+    },
+    {
+      name: 'ModelScript',
+      path: '/ai/modelScript',
+      component: () => import('@/views/ai/modelScript/index.vue'),
+      meta: {
+        locale: 'menu.ai.modelScript.list',
+        requiresAuth: true,
+      },
+    },
 
     {
       name: 'Item',
@@ -54,7 +72,7 @@ const AI: AppRouteRecordRaw = {
       path: '/ai/order',
       component: () => import('@/views/ai/order/index.vue'),
       meta: {
-        locale: 'menu.ai.order.list',
+        locale: 'menu.ai.order',
         requiresAuth: true,
       },
     },
@@ -63,7 +81,16 @@ const AI: AppRouteRecordRaw = {
       path: '/ai/pay/info',
       component: () => import('@/views/ai/pay/PaymentInfo/index.vue'),
       meta: {
-        locale: 'menu.ai.pay.info.list',
+        locale: 'menu.ai.pay',
+        requiresAuth: true,
+      },
+    },
+    {
+      name: 'PayConfig',
+      path: '/ai/pay/config',
+      component: () => import('@/views/ai/pay/config/index.vue'),
+      meta: {
+        locale: 'menu.ai.pay',
         requiresAuth: true,
       },
     },

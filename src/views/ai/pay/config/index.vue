@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/product';
+  from '@/api/ai/payConfig';
 import checkPermission from '@/utils/permission';
 
     const { proxy } = getCurrentInstance() as any;
@@ -27,8 +27,7 @@ import checkPermission from '@/utils/permission';
   const data = reactive({
     // 查询参数
     queryParams: {
-            title: undefined,
-      createUser: undefined,
+            name: undefined,
       page: 1,
       size: 10,
       sort: ['createTime,desc'],
@@ -37,9 +36,14 @@ import checkPermission from '@/utils/permission';
     form: {} as DataRecord,
     // 表单验证规则
     rules: {
-      title: [{ required: true, message: '商品名称不能为空' }],
-      price: [{ required: true, message: '价格（分）不能为空' }],
-      tokenPrice: [{ required: true, message: 'token数量不能为空' }],
+      name: [{ required: true, message: '支付名称不能为空' }],
+      icon: [{ required: true, message: '渠道图标不能为空' }],
+      way: [{ required: true, message: '支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]不能为空' }],
+      sort: [{ required: true, message: '排序编号不能为空' }],
+      remark: [{ required: true, message: '备注信息不能为空' }],
+      params: [{ required: true, message: '配置参数不能为空' }],
+      isDefault: [{ required: true, message: '默认支付: [0=否的, 1=是的]不能为空' }],
+      status: [{ required: true, message: '方式状态: [0=关闭, 1=开启]不能为空' }],
     },
   });
   const { queryParams, form, rules } = toRefs(data);
@@ -67,7 +71,7 @@ import checkPermission from '@/utils/permission';
    */
   const toAdd = () => {
     reset();
-    title.value = '新增产品';
+    title.value = '新增支付配置';
     visible.value = true;
   };
 
@@ -80,7 +84,7 @@ import checkPermission from '@/utils/permission';
     reset();
     get(id).then((res) => {
       form.value = res.data;
-      title.value = '修改产品';
+      title.value = '修改支付配置';
       visible.value = true;
     });
   };
@@ -200,7 +204,7 @@ import checkPermission from '@/utils/permission';
     if (exportLoading.value) return;
     exportLoading.value = true;
     proxy
-      .download('/ai/product/export', { ...queryParams.value }, '产品数据')
+      .download('/ai/payConfig/export', { ...queryParams.value }, '支付配置数据')
       .finally(() => {
         exportLoading.value = false;
       });
@@ -244,32 +248,23 @@ import checkPermission from '@/utils/permission';
 
 <script lang="ts">
   export default {
-    name: 'Product',
+    name: 'PayConfig',
   };
 </script>
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.product', 'menu.ai.product.list']" />
-    <a-card class="general-card" :title="$t('menu.ai.product.list')">
+    <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.config.list']" />
+    <a-card class="general-card" :title="$t('menu.ai.pay.config.list')">
       <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
         <div v-if="showQuery" class="header-query">
           <a-form ref="queryFormRef" :model="queryParams" layout="inline">
-            <a-form-item field="title" hide-label>
+            <a-form-item field="name" hide-label>
               <a-input
-                v-model="queryParams.title"
-                placeholder="输入商品名称搜索"
-                allow-clear
-                style="width: 150px"
-                @press-enter="handleQuery"
-              />
-            </a-form-item>
-            <a-form-item field="createUser" hide-label>
-              <a-input
-                v-model="queryParams.createUser"
-                placeholder="输入创建人搜索"
+                v-model="queryParams.name"
+                placeholder="输入支付名称搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -293,14 +288,14 @@ import checkPermission from '@/utils/permission';
             <a-col :span="12">
               <a-space>
                 <a-button
-                  v-permission="['ai:product:add']"
+                  v-permission="['ai:payConfig:add']"
                   type="primary"
                   @click="toAdd"
                 >
                   <template #icon><icon-plus /></template>新增
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:update']"
+                  v-permission="['ai:payConfig:update']"
                   type="primary"
                   status="success"
                   :disabled="single"
@@ -310,7 +305,7 @@ import checkPermission from '@/utils/permission';
                   <template #icon><icon-edit /></template>修改
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:delete']"
+                  v-permission="['ai:payConfig:delete']"
                   type="primary"
                   status="danger"
                   :disabled="multiple"
@@ -320,7 +315,7 @@ import checkPermission from '@/utils/permission';
                   <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:export']"
+                  v-permission="['ai:payConfig:export']"
                   :loading="exportLoading"
                   type="primary"
                   status="warning"
@@ -365,26 +360,29 @@ import checkPermission from '@/utils/permission';
         @selection-change="handleSelectionChange"
       >
         <template #columns>
-          <a-table-column title="商品id" data-index="id">
+          <a-table-column title="主键" data-index="id">
             <template #cell="{ record }">
               <a-link @click="toDetail(record.id)">{{ record.id }}</a-link>
             </template>
           </a-table-column>
-          <a-table-column title="商品名称" data-index="title" />
-          <a-table-column title="价格（分）" data-index="price" />
-          <a-table-column title="token数量" data-index="tokenPrice" />
-          <a-table-column title="创建人" data-index="createUserString" />
+          <a-table-column title="支付名称" data-index="name" />
+          <a-table-column title="渠道图标" data-index="icon" />
+          <a-table-column title="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" data-index="way" />
+          <a-table-column title="排序编号" data-index="sort" />
+          <a-table-column title="备注信息" data-index="remark" />
+          <a-table-column title="配置参数" data-index="params" />
+          <a-table-column title="默认支付: [0=否的, 1=是的]" data-index="isDefault" />
+          <a-table-column title="方式状态: [0=关闭, 1=开启]" data-index="status" />
           <a-table-column title="创建时间" data-index="createTime" />
-          <a-table-column title="修改人" data-index="updateUser" />
-          <a-table-column title="更新时间" data-index="updateTime" />
+          <a-table-column title="创建人" data-index="createUser" />
           <a-table-column
-            v-if="checkPermission(['ai:product:update', 'ai:product:delete'])"
+            v-if="checkPermission(['ai:payConfig:update', 'ai:payConfig:delete'])"
             title="操作"
             align="center"
           >
             <template #cell="{ record }">
               <a-button
-                v-permission="['ai:product:update']"
+                v-permission="['ai:payConfig:update']"
                 type="text"
                 size="small"
                 title="修改"
@@ -398,7 +396,7 @@ import checkPermission from '@/utils/permission';
                 @ok="handleDelete([record.id])"
               >
                 <a-button
-                  v-permission="['ai:product:delete']"
+                  v-permission="['ai:payConfig:delete']"
                   type="text"
                   size="small"
                   title="删除"
@@ -424,21 +422,36 @@ import checkPermission from '@/utils/permission';
         @cancel="handleCancel"
       >
         <a-form ref="formRef" :model="form" :rules="rules" size="large">
-          <a-form-item label="商品名称" field="title">
-            <a-input v-model="form.title" placeholder="请输入商品名称" />
+          <a-form-item label="支付名称" field="name">
+            <a-input v-model="form.name" placeholder="请输入支付名称" />
           </a-form-item>
-          <a-form-item label="价格（分）" field="price">
-            <a-input v-model="form.price" placeholder="请输入价格（分）" />
+          <a-form-item label="渠道图标" field="icon">
+            <a-input v-model="form.icon" placeholder="请输入渠道图标" />
           </a-form-item>
-          <a-form-item label="token数量" field="tokenPrice">
-            <a-input v-model="form.tokenPrice" placeholder="请输入token数量" />
+          <a-form-item label="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" field="way">
+            <a-input v-model="form.way" placeholder="请输入支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" />
+          </a-form-item>
+          <a-form-item label="排序编号" field="sort">
+            <a-input v-model="form.sort" placeholder="请输入排序编号" />
+          </a-form-item>
+          <a-form-item label="备注信息" field="remark">
+            <a-input v-model="form.remark" placeholder="请输入备注信息" />
+          </a-form-item>
+          <a-form-item label="配置参数" field="params">
+            <a-input v-model="form.params" placeholder="请输入配置参数" />
+          </a-form-item>
+          <a-form-item label="默认支付: [0=否的, 1=是的]" field="isDefault">
+            <a-input v-model="form.isDefault" placeholder="请输入默认支付: [0=否的, 1=是的]" />
+          </a-form-item>
+          <a-form-item label="方式状态: [0=关闭, 1=开启]" field="status">
+            <a-input v-model="form.status" placeholder="请输入方式状态: [0=关闭, 1=开启]" />
           </a-form-item>
         </a-form>
       </a-modal>
 
       <!-- 详情区域 -->
       <a-drawer
-        title="产品详情"
+        title="支付配置详情"
         :visible="detailVisible"
         :width="580"
         :footer="false"
@@ -447,35 +460,65 @@ import checkPermission from '@/utils/permission';
         @cancel="handleDetailCancel"
       >
         <a-descriptions :column="2" bordered size="large">
-          <a-descriptions-item label="商品id">
+          <a-descriptions-item label="主键">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.id }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="商品名称">
+          <a-descriptions-item label="支付名称">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.title }}</span>
+            <span v-else>{{ dataDetail.name }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="价格（分）">
+          <a-descriptions-item label="渠道图标">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.price }}</span>
+            <span v-else>{{ dataDetail.icon }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="token数量">
+          <a-descriptions-item label="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.tokenPrice }}</span>
+            <span v-else>{{ dataDetail.way }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="创建人">
+          <a-descriptions-item label="排序编号">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.createUserString }}</span>
+            <span v-else>{{ dataDetail.sort }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="备注信息">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.remark }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="配置参数">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.params }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="默认支付: [0=否的, 1=是的]">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.isDefault }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="方式状态: [0=关闭, 1=开启]">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.status }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="是否删除: [0=否, 1=是]">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.isDeleted }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建时间">
             <a-skeleton v-if="detailLoading" :animation="true">
@@ -483,17 +526,23 @@ import checkPermission from '@/utils/permission';
             </a-skeleton>
             <span v-else>{{ dataDetail.createTime }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="修改人">
+          <a-descriptions-item label="创建人">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.updateUserString }}</span>
+            <span v-else>{{ dataDetail.createUserString }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="更新时间">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.updateTime }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="修改人">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.updateUserString }}</span>
           </a-descriptions-item>
         </a-descriptions>
       </a-drawer>
