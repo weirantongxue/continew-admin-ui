@@ -1,9 +1,17 @@
 <script lang="ts" setup>
-import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/orderInfo';
+import {
+  add,
+  DataRecord,
+  del,
+  get,
+  list,
+  ListParam,
+  update,
+} from '@/api/ai/orderinfo';
 import checkPermission from '@/utils/permission';
 
-const {proxy} = getCurrentInstance() as any;
+
+const { proxy } = getCurrentInstance() as any;
 // const { dis_enable_status_enum } = proxy.useDict('dis_enable_status_enum');
 
 const queryFormRef = ref();
@@ -24,17 +32,12 @@ const exportLoading = ref(false);
 const visible = ref(false);
 const detailVisible = ref(false);
 
-const { order_status_enum } = proxy.useDict(
-    'order_status_enum'
-  );
-
 const data = reactive({
   // 查询参数
   queryParams: {
+    id: undefined,
     title: undefined,
     orderNo: undefined,
-    productId: undefined,
-    orderStatus: undefined,
     createUser: undefined,
     page: 1,
     size: 10,
@@ -43,16 +46,17 @@ const data = reactive({
   // 表单数据
   form: {} as DataRecord,
   // 表单验证规则
-  rules: {},
+  rules: {
+  },
 });
-const {queryParams, form, rules} = toRefs(data);
+const { queryParams, form, rules } = toRefs(data);
 
 /**
  * 查询列表
  *
  * @param params 查询参数
  */
-const getList = (params: ListParam = {...queryParams.value}) => {
+const getList = (params: ListParam = { ...queryParams.value }) => {
   loading.value = true;
   list(params)
       .then((res) => {
@@ -64,6 +68,8 @@ const getList = (params: ListParam = {...queryParams.value}) => {
       });
 };
 getList();
+
+
 
 
 /**
@@ -181,7 +187,7 @@ const handleExport = () => {
   if (exportLoading.value) return;
   exportLoading.value = true;
   proxy
-      .download('/ai/orderInfo/export', {...queryParams.value}, '订单信息数据')
+      .download('/front/orderInfo/export', { ...queryParams.value }, '订单信息数据')
       .finally(() => {
         exportLoading.value = false;
       });
@@ -233,15 +239,25 @@ export default {
   <div class="app-container">
     <Breadcrumb :items="['menu.ai.order', 'menu.ai.order.list']"/>
     <a-card class="general-card" :title="$t('menu.ai.order.list')">
-      <!-- 头部区域 -->
+
+    <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
         <div v-if="showQuery" class="header-query">
           <a-form ref="queryFormRef" :model="queryParams" layout="inline">
+            <a-form-item field="id" hide-label>
+              <a-input
+                  v-model="queryParams.id"
+                  placeholder="输入订单id搜索"
+                  allow-clear
+                  style="width: 150px"
+                  @press-enter="handleQuery"
+              />
+            </a-form-item>
             <a-form-item field="title" hide-label>
               <a-input
                   v-model="queryParams.title"
-                  placeholder="订单标题"
+                  placeholder="输入订单标题搜索"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -250,34 +266,16 @@ export default {
             <a-form-item field="orderNo" hide-label>
               <a-input
                   v-model="queryParams.orderNo"
-                  placeholder="商户订单编号"
+                  placeholder="输入商户订单编号搜索"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
-              />
-            </a-form-item>
-            <a-form-item field="productId" hide-label>
-              <a-input
-                  v-model="queryParams.productId"
-                  placeholder="支付产品id"
-                  allow-clear
-                  style="width: 150px"
-                  @press-enter="handleQuery"
-              />
-            </a-form-item>
-            <a-form-item field="orderStatus" hide-label>
-              <a-select
-                v-model="queryParams.orderStatus"
-                :options="order_status_enum"
-                placeholder="订单状态"
-                allow-clear
-                style="width: 150px"
               />
             </a-form-item>
             <a-form-item field="createUser" hide-label>
               <a-input
                   v-model="queryParams.createUser"
-                  placeholder="创建人"
+                  placeholder="输入创建人搜索"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -286,16 +284,10 @@ export default {
             <a-form-item hide-label>
               <a-space>
                 <a-button type="primary" @click="handleQuery">
-                  <template #icon>
-                    <icon-search/>
-                  </template>
-                  查询
+                  <template #icon><icon-search /></template>查询
                 </a-button>
                 <a-button @click="resetQuery">
-                  <template #icon>
-                    <icon-refresh/>
-                  </template>
-                  重置
+                  <template #icon><icon-refresh /></template>重置
                 </a-button>
               </a-space>
             </a-form-item>
@@ -307,29 +299,23 @@ export default {
             <a-col :span="12">
               <a-space>
                 <a-button
-                    v-permission="['ai:orderInfo:delete']"
+                    v-permission="['front:orderInfo:delete']"
                     type="primary"
                     status="danger"
                     :disabled="multiple"
                     :title="multiple ? '请选择要删除的数据' : ''"
                     @click="handleBatchDelete"
                 >
-                  <template #icon>
-                    <icon-delete/>
-                  </template>
-                  删除
+                  <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                    v-permission="['ai:orderInfo:export']"
+                    v-permission="['front:orderInfo:export']"
                     :loading="exportLoading"
                     type="primary"
                     status="warning"
                     @click="handleExport"
                 >
-                  <template #icon>
-                    <icon-download/>
-                  </template>
-                  导出
+                  <template #icon><icon-download /></template>导出
                 </a-button>
               </a-space>
             </a-col>
@@ -373,17 +359,18 @@ export default {
               <a-link @click="toDetail(record.id)">{{ record.id }}</a-link>
             </template>
           </a-table-column>
-          <a-table-column title="订单标题" data-index="title"/>
-          <a-table-column title="商户订单编号" data-index="orderNo"/>
-          <a-table-column title="支付产品id" data-index="productId"/>
-          <a-table-column title="订单金额(分)" data-index="totalFee"/>
-          <a-table-column title="订单二维码连接" data-index="codeUrl"/>
-          <a-table-column title="订单状态" data-index="orderStatus"/>
-          <a-table-column title="创建人" data-index="createUser"/>
-          <a-table-column title="创建时间" data-index="createTime"/>
-          <a-table-column title="更新时间" data-index="updateTime"/>
+          <a-table-column title="订单标题" data-index="title" />
+          <a-table-column title="商户订单编号" data-index="orderNo" />
+          <a-table-column title="支付产品id" data-index="productId" />
+          <a-table-column title="订单金额(元)" data-index="totalFee" />
+          <a-table-column title="订单二维码连接" data-index="codeUrl" />
+          <a-table-column title="部门账户信息" data-index="deptId" />
+          <a-table-column title="订单状态" data-index="orderStatus" />
+          <a-table-column title="创建人" data-index="createUser" />
+          <a-table-column title="创建时间" data-index="createTime" />
+          <a-table-column title="更新时间" data-index="updateTime" />
           <a-table-column
-              v-if="checkPermission(['ai:orderInfo:update', 'ai:orderInfo:delete'])"
+              v-if="checkPermission(['front:orderInfo:update', 'front:orderInfo:delete'])"
               title="操作"
               align="center"
           >
@@ -394,16 +381,13 @@ export default {
                   @ok="handleDelete([record.id])"
               >
                 <a-button
-                    v-permission="['ai:orderInfo:delete']"
+                    v-permission="['front:orderInfo:delete']"
                     type="text"
                     size="small"
                     title="删除"
                     :disabled="record.disabled"
                 >
-                  <template #icon>
-                    <icon-delete/>
-                  </template>
-                  删除
+                  <template #icon><icon-delete /></template>删除
                 </a-button>
               </a-popconfirm>
             </template>
@@ -423,23 +407,6 @@ export default {
           @cancel="handleCancel"
       >
         <a-form ref="formRef" :model="form" :rules="rules" size="large">
-          <a-form-item label="订单标题" field="title">
-            <a-input v-model="form.title" placeholder="请输入订单标题"/>
-          </a-form-item>
-          <a-form-item label="商户订单编号" field="orderNo">
-            <a-input v-model="form.orderNo" placeholder="请输入商户订单编号"/>
-          </a-form-item>
-          <a-form-item label="支付产品id" field="productId">
-            <a-input v-model="form.productId" placeholder="请输入支付产品id"/>
-          </a-form-item>
-          <a-form-item label="订单金额(分)" field="totalFee">
-            <a-input v-model="form.totalFee" placeholder="请输入订单金额(分)"/>
-          </a-form-item>
-          <a-form-item label="订单二维码连接" field="codeUrl">
-            <a-input v-model="form.codeUrl" placeholder="请输入订单二维码连接"/>
-          </a-form-item>
-          <a-form-item label="订单状态" field="orderStatus">
-          </a-form-item>
         </a-form>
       </a-modal>
 
@@ -456,67 +423,67 @@ export default {
         <a-descriptions :column="2" bordered size="large">
           <a-descriptions-item label="订单id">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.id }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="订单标题">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.title }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="商户订单编号">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.orderNo }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="支付产品id">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.productId }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="订单金额(分)">
+          <a-descriptions-item label="订单金额(元)">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.totalFee }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="订单二维码连接">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.codeUrl }}</span>
           </a-descriptions-item>
+          <a-descriptions-item label="部门账户信息">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.deptId }}</span>
+          </a-descriptions-item>
           <a-descriptions-item label="订单状态">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.orderStatus }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建人">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.createUserString }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建时间">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.createTime }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="修改人">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
-            </a-skeleton>
-            <span v-else>{{ dataDetail.updateUserString }}</span>
-          </a-descriptions-item>
           <a-descriptions-item label="更新时间">
             <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1"/>
+              <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.updateTime }}</span>
           </a-descriptions-item>

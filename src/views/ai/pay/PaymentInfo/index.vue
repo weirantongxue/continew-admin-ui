@@ -1,7 +1,15 @@
 <script lang="ts" setup>
-import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/paymentInfo';
+import {
+  add,
+  DataRecord,
+  del,
+  get,
+  list,
+  ListParam,
+  update,
+} from '@/api/ai/paymentinfo';
 import checkPermission from '@/utils/permission';
+
 
 const { proxy } = getCurrentInstance() as any;
 // const { dis_enable_status_enum } = proxy.useDict('dis_enable_status_enum');
@@ -30,8 +38,8 @@ const data = reactive({
     orderNo: undefined,
     transactionId: undefined,
     paymentType: undefined,
-    tradeType: undefined,
     tradeState: undefined,
+    createTime: undefined,
     page: 1,
     size: 10,
     sort: ['createTime,desc'],
@@ -200,7 +208,7 @@ const handleExport = () => {
   if (exportLoading.value) return;
   exportLoading.value = true;
   proxy
-      .download('/ai/paymentInfo/export', { ...queryParams.value }, '支付信息数据')
+      .download('/front/paymentInfo/export', { ...queryParams.value }, '支付信息数据')
       .finally(() => {
         exportLoading.value = false;
       });
@@ -252,7 +260,7 @@ export default {
   <div class="app-container">
     <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.info.list']" />
     <a-card class="general-card" :title="$t('menu.ai.pay.info.list')">
-      <!-- 头部区域 -->
+    <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
         <div v-if="showQuery" class="header-query">
@@ -284,19 +292,19 @@ export default {
                   @press-enter="handleQuery"
               />
             </a-form-item>
-            <a-form-item field="tradeType" hide-label>
+            <a-form-item field="tradeState" hide-label>
               <a-input
-                  v-model="queryParams.tradeType"
-                  placeholder="输入交易类型搜索"
+                  v-model="queryParams.tradeState"
+                  placeholder="输入交易状态搜索"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
               />
             </a-form-item>
-            <a-form-item field="tradeState" hide-label>
+            <a-form-item field="createTime" hide-label>
               <a-input
-                  v-model="queryParams.tradeState"
-                  placeholder="输入交易状态搜索"
+                  v-model="queryParams.createTime"
+                  placeholder="输入创建时间搜索"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -320,14 +328,14 @@ export default {
             <a-col :span="12">
               <a-space>
                 <a-button
-                    v-permission="['ai:paymentInfo:add']"
+                    v-permission="['front:paymentInfo:add']"
                     type="primary"
                     @click="toAdd"
                 >
                   <template #icon><icon-plus /></template>新增
                 </a-button>
                 <a-button
-                    v-permission="['ai:paymentInfo:update']"
+                    v-permission="['front:paymentInfo:update']"
                     type="primary"
                     status="success"
                     :disabled="single"
@@ -337,7 +345,7 @@ export default {
                   <template #icon><icon-edit /></template>修改
                 </a-button>
                 <a-button
-                    v-permission="['ai:paymentInfo:delete']"
+                    v-permission="['front:paymentInfo:delete']"
                     type="primary"
                     status="danger"
                     :disabled="multiple"
@@ -347,7 +355,7 @@ export default {
                   <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                    v-permission="['ai:paymentInfo:export']"
+                    v-permission="['front:paymentInfo:export']"
                     :loading="exportLoading"
                     type="primary"
                     status="warning"
@@ -402,18 +410,18 @@ export default {
           <a-table-column title="支付类型" data-index="paymentType" />
           <a-table-column title="交易类型" data-index="tradeType" />
           <a-table-column title="交易状态" data-index="tradeState" />
-          <a-table-column title="支付金额(分)" data-index="payerTotal" />
+          <a-table-column title="支付金额(元)" data-index="payerTotal" />
           <a-table-column title="通知参数" data-index="content" />
           <a-table-column title="创建时间" data-index="createTime" />
           <a-table-column title="更新时间" data-index="updateTime" />
           <a-table-column
-              v-if="checkPermission(['ai:paymentInfo:update', 'ai:paymentInfo:delete'])"
+              v-if="checkPermission(['front:paymentInfo:update', 'front:paymentInfo:delete'])"
               title="操作"
               align="center"
           >
             <template #cell="{ record }">
               <a-button
-                  v-permission="['ai:paymentInfo:update']"
+                  v-permission="['front:paymentInfo:update']"
                   type="text"
                   size="small"
                   title="修改"
@@ -427,7 +435,7 @@ export default {
                   @ok="handleDelete([record.id])"
               >
                 <a-button
-                    v-permission="['ai:paymentInfo:delete']"
+                    v-permission="['front:paymentInfo:delete']"
                     type="text"
                     size="small"
                     title="删除"
@@ -503,7 +511,7 @@ export default {
             </a-skeleton>
             <span v-else>{{ dataDetail.tradeState }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="支付金额(分)">
+          <a-descriptions-item label="支付金额(元)">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>

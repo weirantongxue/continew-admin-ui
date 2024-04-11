@@ -42,6 +42,7 @@ import localeMode from '@/views/ai/model/locale/en-US';
 import localeModelScript from '@/views/ai/modelScript/locale/en-US';
 import localeAiOrder from '@/views/ai/order/locale/en-US';
 import localePayInfo from '@/views/ai/pay/PaymentInfo/locale/en-US';
+import localeProduct from '@/views/ai/product/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -55,6 +56,7 @@ export default {
   'menu.ai.order': 'order',
   'menu.ai.pay': '支付管理',
   'menu.ai.pay.info': '支付信息列表',
+  'menu.ai.product': '产品管理',
   'menu.system': 'System management',
   'menu.tool': 'Tool',
   'menu.monitor': 'Monitor',
@@ -118,5 +120,6 @@ export default {
   ...localeModelScript,
   ...localeAiOrder,
   ...localePayInfo,
+  ...localeProduct,
 
 };

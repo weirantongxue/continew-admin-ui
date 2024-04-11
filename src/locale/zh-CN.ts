@@ -42,6 +42,7 @@ import localeMode from '@/views/ai/model/locale/zh-CN';
 import localeModelScript from '@/views/ai/modelScript/locale/zh-CN';
 import localeAiOrder from '@/views/ai/order/locale/zh-CN';
 import localePay from '@/views/ai/pay/PaymentInfo/locale/zh-CN';
+import localeProduct from '@/views/ai/product/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -54,6 +55,7 @@ export default {
   'menu.ai.model': 'AI模型',
   'menu.ai.order': '订单管理',
   'menu.ai.pay': '支付管理',
+  'menu.ai.product': '产品管理',
   'menu.system': '系统管理',
   'menu.tool': '系统工具',
   'menu.monitor': '系统监控',
@@ -117,5 +119,5 @@ export default {
   ...localeModelScript,
   ...localeAiOrder,
   ...localePay,
-
+  ...localeProduct,
 };

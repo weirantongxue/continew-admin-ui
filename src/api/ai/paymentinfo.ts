@@ -22,8 +22,8 @@ export interface ListParam {
     orderNo?: string;
     transactionId?: string;
     paymentType?: string;
-    tradeType?: string;
     tradeState?: string;
+    createTime?: string;
     page?: number;
     size?: number;
     sort?: Array<string>;

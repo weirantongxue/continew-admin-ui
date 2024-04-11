@@ -9,6 +9,9 @@ export interface DataRecord {
   modelId?: string;
   prompt?: string;
   coverUrl?: string;
+  component?: string;
+  description?: string;
+  sort?: string;
   status?: string;
   isDelete?: string;
   createUser?: string;
@@ -22,10 +25,6 @@ export interface DataRecord {
 export interface ListParam {
   name?: string;
   modelId?: string;
-  prompt?: string;
-  status?: string;
-  createUser?: string;
-  createTime?: string;
   page?: number;
   size?: number;
   sort?: Array<string>;

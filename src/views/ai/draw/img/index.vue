@@ -42,17 +42,8 @@
       size: 10,
       sort: ['createTime,desc'],
     },
-    // 表单数据
-    form: {} as DataRecord,
-    // 表单验证规则
-    rules: {
-      taskId: [{ required: true, message: '任务id不能为空' }],
-      imageUrl: [{ required: true, message: '图片地址不能为空' }],
-      createTime: [{ required: true, message: '创建时间不能为空' }],
-      createUser: [{ required: true, message: '创建人不能为空' }],
-    },
   });
-  const { queryParams, form, rules } = toRefs(data);
+  const { queryParams} = toRefs(data);
 
   /**
    * 查询列表
@@ -72,15 +63,7 @@
   };
   getList();
 
-  /**
-   * 重置表单
-   */
-  const reset = () => {
-    form.value = {
-      // TODO 待补充需要重置的字段默认值，详情请参考其他模块 index.vue
-    };
-    formRef.value.resetFields();
-  };
+
 
   /**
    * 取消
@@ -90,28 +73,7 @@
     formRef.value.resetFields();
   };
 
-  /**
-   * 确定
-   */
-  const handleOk = () => {
-    formRef.value.validate((valid: any) => {
-      if (!valid) {
-        if (form.value.id !== undefined) {
-          update(form.value, form.value.id).then((res) => {
-            handleCancel();
-            getList();
-            proxy.$message.success(res.msg);
-          });
-        } else {
-          add(form.value).then((res) => {
-            handleCancel();
-            getList();
-            proxy.$message.success(res.msg);
-          });
-        }
-      }
-    });
-  };
+
 
   /**
    * 查看详情
@@ -350,7 +312,11 @@
             </template>
           </a-table-column>
           <a-table-column title="任务id" data-index="taskId" />
-          <a-table-column title="图片地址" data-index="imageUrl" />
+          <a-table-column title="图片地址" data-index="imageUrl">
+            <template #cell="{ record }">
+              <img :src="record.imageUrl" alt="图片" style="max-width: 100px; max-height: 100px;" />
+            </template>
+          </a-table-column>
           <a-table-column title="创建时间" data-index="createTime" />
           <a-table-column title="创建人" data-index="createUser" />
           <a-table-column
@@ -378,33 +344,6 @@
           </a-table-column>
         </template>
       </a-table>
-
-      <!-- 表单区域 -->
-      <a-modal
-        :title="title"
-        :visible="visible"
-        :mask-closable="false"
-        :esc-to-close="false"
-        unmount-on-close
-        render-to-body
-        @ok="handleOk"
-        @cancel="handleCancel"
-      >
-        <a-form ref="formRef" :model="form" :rules="rules" size="large">
-          <a-form-item label="任务id" field="taskId">
-            <a-input v-model="form.taskId" placeholder="请输入任务id" />
-          </a-form-item>
-          <a-form-item label="图片地址" field="imageUrl">
-            <a-input v-model="form.imageUrl" placeholder="请输入图片地址" />
-          </a-form-item>
-          <a-form-item label="创建时间" field="createTime">
-            <a-input v-model="form.createTime" placeholder="请输入创建时间" />
-          </a-form-item>
-          <a-form-item label="创建人" field="createUser">
-            <a-input v-model="form.createUser" placeholder="请输入创建人" />
-          </a-form-item>
-        </a-form>
-      </a-modal>
 
       <!-- 详情区域 -->
       <a-drawer

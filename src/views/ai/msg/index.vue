@@ -388,7 +388,7 @@ export default {
           <a-table-column title="提问" data-index="question" />
           <a-table-column title="回答" data-index="answer" />
           <a-table-column title="模型名称" data-index="model" />
-          <a-table-column title="是否采纳,0:未点击.1:采纳.2,未采纳" data-index="adopt" />
+          <a-table-column title="是否采纳" data-index="adopt" />
           <a-table-column title="输入词块数" data-index="promptTokens" />
           <a-table-column title="输出词块数" data-index="completionTokens" />
           <a-table-column title="总词块数" data-index="totalTokens" />
@@ -550,12 +550,6 @@ export default {
             </a-skeleton>
             <span v-else>{{ dataDetail.chatResponseTime }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="是否删除: [0=否, 1=是]">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.isDeleted }}</span>
-          </a-descriptions-item>
           <a-descriptions-item label="创建时间">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
@@ -567,18 +561,6 @@ export default {
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.createUserString }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="更新时间">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.updateTime }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="修改人">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.updateUserString }}</span>
           </a-descriptions-item>
         </a-descriptions>
       </a-drawer>

@@ -10,6 +10,7 @@ export interface DataRecord {
     productId?: string;
     totalFee?: string;
     codeUrl?: string;
+    deptId?: string;
     orderStatus?: string;
     createUser?: string;
     createTime?: string;
@@ -20,10 +21,9 @@ export interface DataRecord {
 }
 
 export interface ListParam {
+    id?: string;
     title?: string;
     orderNo?: string;
-    productId?: string;
-    orderStatus?: string;
     createUser?: string;
     page?: number;
     size?: number;

@@ -53,7 +53,7 @@
       ],
       url: [{ required: true, message: '模型地址不能为空' }],
       sort: [{ required: true, message: '排序值不能为空' }],
-      status: [{ required: true, message: '状态（1：启用；2：禁用）不能为空' }],
+      status: [{ required: true, message: '状态' }],
     },
   });
   const { queryParams, form, rules } = toRefs(data);
@@ -281,7 +281,7 @@
             <a-form-item field="modelType" hide-label>
               <a-input
                 v-model="queryParams.modelType"
-                placeholder="输入模型类型,1:大语言模型,2:文生图搜索"
+                placeholder="输入模型类型"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -290,7 +290,7 @@
             <a-form-item field="status" hide-label>
               <a-input
                 v-model="queryParams.status"
-                placeholder="输入状态（1：启用；2：禁用）搜索"
+                placeholder="输入状态"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -411,7 +411,7 @@
           </a-table-column>
           <a-table-column title="模型名称" data-index="name" />
           <a-table-column
-            title="模型类型,1:大语言模型,2:文生图"
+            title="模型类型"
             data-index="modelType"
           />
           <a-table-column title="模型图标" data-index="coverUrl" />
@@ -419,7 +419,7 @@
           <a-table-column title="描述" data-index="introduction" />
           <a-table-column title="排序值" data-index="sort" />
           <a-table-column
-            title="状态（1：启用；2：禁用）"
+            title="状态"
             data-index="status"
           />
           <a-table-column title="创建人" data-index="createUser" />
@@ -492,10 +492,10 @@
           <a-form-item label="排序值" field="sort">
             <a-input v-model="form.sort" placeholder="请输入排序值" />
           </a-form-item>
-          <a-form-item label="状态（1：启用；2：禁用）" field="status">
+          <a-form-item label="状态" field="status">
             <a-input
               v-model="form.status"
-              placeholder="请输入状态（1：启用；2：禁用）"
+              placeholder="请输入状态"
             />
           </a-form-item>
         </a-form>
@@ -554,17 +554,11 @@
             </a-skeleton>
             <span v-else>{{ dataDetail.sort }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="状态（1：启用；2：禁用）">
+          <a-descriptions-item label="状态">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.status }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="是否删除: 0=否, 1=是">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.isDelete }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建人">
             <a-skeleton v-if="detailLoading" :animation="true">

@@ -349,7 +349,6 @@
           <a-table-column title="消息数" data-index="number" />
           <a-table-column title="创建人" data-index="createUserString" />
           <a-table-column title="创建时间" data-index="createTime" />
-          <a-table-column title="更新时间" data-index="updateTime" />
           <a-table-column
             v-if="checkPermission(['ai:item:update', 'ai:item:delete'])"
             title="操作"
@@ -391,12 +390,6 @@
           <a-form-item label="会话名称" field="name">
             <a-input v-model="form.name" placeholder="请输入会话名称" />
           </a-form-item>
-          <a-form-item label="最后一条消息" field="lastMessage">
-            <a-input
-              v-model="form.lastMessage"
-              placeholder="请输入最后一条消息"
-            />
-          </a-form-item>
           <a-form-item label="消息数" field="number">
             <a-input v-model="form.number" placeholder="请输入消息数" />
           </a-form-item>
@@ -426,23 +419,11 @@
             </a-skeleton>
             <span v-else>{{ dataDetail.name }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="最后一条消息">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.lastMessage }}</span>
-          </a-descriptions-item>
           <a-descriptions-item label="消息数">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.number }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="是否删除: [0=否, 1=是]">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.isDeleted }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建时间">
             <a-skeleton v-if="detailLoading" :animation="true">
@@ -455,18 +436,6 @@
               <a-skeleton-line :rows="1" />
             </a-skeleton>
             <span v-else>{{ dataDetail.createUserString }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="更新时间">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.updateTime }}</span>
-          </a-descriptions-item>
-          <a-descriptions-item label="修改人">
-            <a-skeleton v-if="detailLoading" :animation="true">
-              <a-skeleton-line :rows="1" />
-            </a-skeleton>
-            <span v-else>{{ dataDetail.updateUserString }}</span>
           </a-descriptions-item>
         </a-descriptions>
       </a-drawer>
