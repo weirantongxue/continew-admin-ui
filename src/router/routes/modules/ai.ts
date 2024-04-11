@@ -95,6 +95,15 @@ const AI: AppRouteRecordRaw = {
       },
     },
     {
+      name: 'DeptAccount',
+      path: '/ai/pay/account',
+      component: () => import('@/views/ai/pay/account/index.vue'),
+      meta: {
+        locale: 'menu.ai.pay',
+        requiresAuth: true,
+      },
+    },
+    {
       name: 'Product',
       path: '/ai/product',
       component: () => import('@/views/ai/product/index.vue'),

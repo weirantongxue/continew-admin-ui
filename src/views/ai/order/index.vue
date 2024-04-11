@@ -24,6 +24,10 @@ const exportLoading = ref(false);
 const visible = ref(false);
 const detailVisible = ref(false);
 
+const { order_status_enum } = proxy.useDict(
+    'order_status_enum'
+  );
+
 const data = reactive({
   // 查询参数
   queryParams: {
@@ -61,28 +65,6 @@ const getList = (params: ListParam = {...queryParams.value}) => {
 };
 getList();
 
-/**
- * 打开新增对话框
- */
-const toAdd = () => {
-  reset();
-  title.value = '新增订单信息';
-  visible.value = true;
-};
-
-/**
- * 打开修改对话框
- *
- * @param id ID
- */
-const toUpdate = (id: string) => {
-  reset();
-  get(id).then((res) => {
-    form.value = res.data;
-    title.value = '修改订单信息';
-    visible.value = true;
-  });
-};
 
 /**
  * 重置表单
@@ -259,7 +241,7 @@ export default {
             <a-form-item field="title" hide-label>
               <a-input
                   v-model="queryParams.title"
-                  placeholder="输入订单标题搜索"
+                  placeholder="订单标题"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -268,7 +250,7 @@ export default {
             <a-form-item field="orderNo" hide-label>
               <a-input
                   v-model="queryParams.orderNo"
-                  placeholder="输入商户订单编号搜索"
+                  placeholder="商户订单编号"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -277,25 +259,25 @@ export default {
             <a-form-item field="productId" hide-label>
               <a-input
                   v-model="queryParams.productId"
-                  placeholder="输入支付产品id搜索"
+                  placeholder="支付产品id"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
               />
             </a-form-item>
             <a-form-item field="orderStatus" hide-label>
-              <a-input
-                  v-model="queryParams.orderStatus"
-                  placeholder="输入订单状态搜索"
-                  allow-clear
-                  style="width: 150px"
-                  @press-enter="handleQuery"
+              <a-select
+                v-model="queryParams.orderStatus"
+                :options="order_status_enum"
+                placeholder="订单状态"
+                allow-clear
+                style="width: 150px"
               />
             </a-form-item>
             <a-form-item field="createUser" hide-label>
               <a-input
                   v-model="queryParams.createUser"
-                  placeholder="输入创建人搜索"
+                  placeholder="创建人"
                   allow-clear
                   style="width: 150px"
                   @press-enter="handleQuery"
@@ -324,29 +306,6 @@ export default {
           <a-row>
             <a-col :span="12">
               <a-space>
-                <a-button
-                    v-permission="['ai:orderInfo:add']"
-                    type="primary"
-                    @click="toAdd"
-                >
-                  <template #icon>
-                    <icon-plus/>
-                  </template>
-                  新增
-                </a-button>
-                <a-button
-                    v-permission="['ai:orderInfo:update']"
-                    type="primary"
-                    status="success"
-                    :disabled="single"
-                    :title="single ? '请选择一条要修改的数据' : ''"
-                    @click="toUpdate(ids[0])"
-                >
-                  <template #icon>
-                    <icon-edit/>
-                  </template>
-                  修改
-                </a-button>
                 <a-button
                     v-permission="['ai:orderInfo:delete']"
                     type="primary"
@@ -429,18 +388,6 @@ export default {
               align="center"
           >
             <template #cell="{ record }">
-              <a-button
-                  v-permission="['ai:orderInfo:update']"
-                  type="text"
-                  size="small"
-                  title="修改"
-                  @click="toUpdate(record.id)"
-              >
-                <template #icon>
-                  <icon-edit/>
-                </template>
-                修改
-              </a-button>
               <a-popconfirm
                   content="是否确定删除该数据？"
                   type="warning"

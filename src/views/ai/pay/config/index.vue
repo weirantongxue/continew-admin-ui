@@ -93,10 +93,8 @@ import checkPermission from '@/utils/permission';
    * 重置表单
    */
   const reset = () => {
-    form.value = {
-      // TODO 待补充需要重置的字段默认值，详情请参考其他模块 index.vue
-    };
-    formRef.value.resetFields();
+    form.value = {};
+    formRef.value?.resetFields();
   };
 
   /**

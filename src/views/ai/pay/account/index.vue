@@ -1,6 +1,10 @@
 <script lang="ts" setup>
+import { TreeNodeData } from '@arco-design/web-vue';
+
 import {add, DataRecord, del, get, list, ListParam, update,}
-  from '@/api/ai/product';
+  from '@/api/ai/deptaccount';
+  import { listDeptTree, listRoleDict } from '@/api/common';
+
 import checkPermission from '@/utils/permission';
 
     const { proxy } = getCurrentInstance() as any;
@@ -23,11 +27,64 @@ import checkPermission from '@/utils/permission';
   const exportLoading = ref(false);
   const visible = ref(false);
   const detailVisible = ref(false);
+  const deptOptions = ref<TreeNodeData[]>([]);
+  const deptTree = ref<TreeNodeData[]>([]);
+  const deptName = ref('');
+  const deptLoading = ref(false);
+
+
+  /**
+   * 过滤部门列表
+   *
+   * @param searchValue 搜索值
+   * @param nodeData 节点值
+   */
+   const filterDeptOptions = (searchValue: string, nodeData: TreeNodeData) => {
+    if (nodeData.title) {
+      return (
+        nodeData.title.toLowerCase().indexOf(searchValue.toLowerCase()) > -1
+      );
+    }
+    return false;
+  };
+
+    /**
+   * 查询部门树
+   *
+   * @param name 名称
+   */
+   const getDeptTree = (name: string) => {
+    listDeptTree({ name }).then((res) => {
+      deptTree.value = res.data;
+      setTimeout(() => {
+        proxy.$refs.deptTreeRef.expandAll();
+      }, 0);
+    });
+  };
+  getDeptTree('');
+  watch(deptName, (val) => {
+    getDeptTree(val);
+  });
+
+    /**
+   * 查询部门列表
+   */
+   const getDeptOptions = () => {
+    deptLoading.value = true;
+    listDeptTree({})
+      .then((res) => {
+        deptOptions.value = res.data;
+      })
+      .finally(() => {
+        deptLoading.value = false;
+      });
+  };
+
 
   const data = reactive({
     // 查询参数
     queryParams: {
-            title: undefined,
+            deptId: undefined,
       createUser: undefined,
       page: 1,
       size: 10,
@@ -37,9 +94,7 @@ import checkPermission from '@/utils/permission';
     form: {} as DataRecord,
     // 表单验证规则
     rules: {
-      title: [{ required: true, message: '商品名称不能为空' }],
-      price: [{ required: true, message: '价格（分）不能为空' }],
-      tokenPrice: [{ required: true, message: 'token数量不能为空' }],
+      deptId: [{ required: true, message: '部门账户信息不能为空' }],
     },
   });
   const { queryParams, form, rules } = toRefs(data);
@@ -67,7 +122,8 @@ import checkPermission from '@/utils/permission';
    */
   const toAdd = () => {
     reset();
-    title.value = '新增产品';
+    getDeptOptions();
+    title.value = '新增部门账户';
     visible.value = true;
   };
 
@@ -80,7 +136,7 @@ import checkPermission from '@/utils/permission';
     reset();
     get(id).then((res) => {
       form.value = res.data;
-      title.value = '修改产品';
+      title.value = '修改部门账户';
       visible.value = true;
     });
   };
@@ -198,7 +254,7 @@ import checkPermission from '@/utils/permission';
     if (exportLoading.value) return;
     exportLoading.value = true;
     proxy
-      .download('/ai/product/export', { ...queryParams.value }, '产品数据')
+      .download('/ai/deptAccount/export', { ...queryParams.value }, '部门账户数据')
       .finally(() => {
         exportLoading.value = false;
       });
@@ -242,23 +298,23 @@ import checkPermission from '@/utils/permission';
 
 <script lang="ts">
   export default {
-    name: 'Product',
+    name: 'DeptAccount',
   };
 </script>
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.product', 'menu.ai.product.list']" />
-    <a-card class="general-card" :title="$t('menu.ai.product.list')">
+    <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.deptaccount.list']" />
+    <a-card class="general-card" :title="$t('menu.ai.pay.deptaccount.list')">
       <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
         <div v-if="showQuery" class="header-query">
           <a-form ref="queryFormRef" :model="queryParams" layout="inline">
-            <a-form-item field="title" hide-label>
+            <a-form-item field="deptId" hide-label>
               <a-input
-                v-model="queryParams.title"
-                placeholder="输入商品名称搜索"
+                v-model="queryParams.deptId"
+                placeholder="输入部门账户信息搜索"
                 allow-clear
                 style="width: 150px"
                 @press-enter="handleQuery"
@@ -291,14 +347,14 @@ import checkPermission from '@/utils/permission';
             <a-col :span="12">
               <a-space>
                 <a-button
-                  v-permission="['ai:product:add']"
+                  v-permission="['ai:deptAccount:add']"
                   type="primary"
                   @click="toAdd"
                 >
                   <template #icon><icon-plus /></template>新增
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:update']"
+                  v-permission="['ai:deptAccount:update']"
                   type="primary"
                   status="success"
                   :disabled="single"
@@ -308,7 +364,7 @@ import checkPermission from '@/utils/permission';
                   <template #icon><icon-edit /></template>修改
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:delete']"
+                  v-permission="['ai:deptAccount:delete']"
                   type="primary"
                   status="danger"
                   :disabled="multiple"
@@ -318,7 +374,7 @@ import checkPermission from '@/utils/permission';
                   <template #icon><icon-delete /></template>删除
                 </a-button>
                 <a-button
-                  v-permission="['ai:product:export']"
+                  v-permission="['ai:deptAccount:export']"
                   :loading="exportLoading"
                   type="primary"
                   status="warning"
@@ -368,21 +424,23 @@ import checkPermission from '@/utils/permission';
               <a-link @click="toDetail(record.id)">{{ record.id }}</a-link>
             </template>
           </a-table-column>
-          <a-table-column title="商品名称" data-index="title" />
-          <a-table-column title="价格（分）" data-index="price" />
-          <a-table-column title="token数量" data-index="tokenPrice" />
-          <a-table-column title="创建人" data-index="createUserString" />
+          <a-table-column title="代币余额" data-index="balanceToken" />
+          <a-table-column title="赠送代币" data-index="giveToken" />
+          <a-table-column title="充值代币" data-index="rechargeToken" />
+          <a-table-column title="充值金额" data-index="rechargeAmount" />
+          <a-table-column title="所属部门" data-index="deptId" />
+          <a-table-column title="创建人" data-index="createUser" />
           <a-table-column title="创建时间" data-index="createTime" />
           <a-table-column title="修改人" data-index="updateUser" />
           <a-table-column title="更新时间" data-index="updateTime" />
           <a-table-column
-            v-if="checkPermission(['ai:product:update', 'ai:product:delete'])"
+            v-if="checkPermission(['ai:deptAccount:update', 'ai:deptAccount:delete'])"
             title="操作"
             align="center"
           >
             <template #cell="{ record }">
               <a-button
-                v-permission="['ai:product:update']"
+                v-permission="['ai:deptAccount:update']"
                 type="text"
                 size="small"
                 title="修改"
@@ -396,7 +454,7 @@ import checkPermission from '@/utils/permission';
                 @ok="handleDelete([record.id])"
               >
                 <a-button
-                  v-permission="['ai:product:delete']"
+                  v-permission="['ai:deptAccount:delete']"
                   type="text"
                   size="small"
                   title="删除"
@@ -422,21 +480,36 @@ import checkPermission from '@/utils/permission';
         @cancel="handleCancel"
       >
         <a-form ref="formRef" :model="form" :rules="rules" size="large">
-          <a-form-item label="商品名称" field="title">
-            <a-input v-model="form.title" placeholder="请输入商品名称" />
+          <a-form-item label="代币余额" field="balanceToken">
+            <a-input v-model="form.balanceToken" placeholder="请输入代币余额" />
           </a-form-item>
-          <a-form-item label="价格（分）" field="price">
-            <a-input v-model="form.price" placeholder="请输入价格（分）" />
+          <a-form-item label="赠送代币" field="giveToken">
+            <a-input v-model="form.giveToken" placeholder="请输入赠送代币" />
           </a-form-item>
-          <a-form-item label="token数量" field="tokenPrice">
-            <a-input v-model="form.tokenPrice" placeholder="请输入token数量" />
+          <a-form-item label="充值代币" field="rechargeToken">
+            <a-input v-model="form.rechargeToken" placeholder="请输入充值代币" />
+          </a-form-item>
+          <a-form-item label="充值金额" field="rechargeAmount">
+            <a-input v-model="form.rechargeAmount" placeholder="请输入充值金额" />
+          </a-form-item>
+          <!-- <a-form-item label="所属部门" field="deptId">
+          </a-form-item> -->
+          <a-form-item label="所属部门" field="deptId">
+            <a-tree-select
+              v-model="form.deptId"
+              :data="deptOptions"
+              placeholder="请选择所属部门"
+              allow-clear
+              allow-search
+              :filter-tree-node="filterDeptOptions"
+            />
           </a-form-item>
         </a-form>
       </a-modal>
 
       <!-- 详情区域 -->
       <a-drawer
-        title="产品详情"
+        title="部门账户详情"
         :visible="detailVisible"
         :width="580"
         :footer="false"
@@ -451,23 +524,35 @@ import checkPermission from '@/utils/permission';
             </a-skeleton>
             <span v-else>{{ dataDetail.id }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="商品名称">
+          <a-descriptions-item label="代币余额">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.title }}</span>
+            <span v-else>{{ dataDetail.balanceToken }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="价格（分）">
+          <a-descriptions-item label="赠送代币">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.price }}</span>
+            <span v-else>{{ dataDetail.giveToken }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="token数量">
+          <a-descriptions-item label="充值代币">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>
-            <span v-else>{{ dataDetail.tokenPrice }}</span>
+            <span v-else>{{ dataDetail.rechargeToken }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="充值金额">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.rechargeAmount }}</span>
+          </a-descriptions-item>
+          <a-descriptions-item label="所属部门">
+            <a-skeleton v-if="detailLoading" :animation="true">
+              <a-skeleton-line :rows="1" />
+            </a-skeleton>
+            <span v-else>{{ dataDetail.deptId }}</span>
           </a-descriptions-item>
           <a-descriptions-item label="创建人">
             <a-skeleton v-if="detailLoading" :animation="true">
