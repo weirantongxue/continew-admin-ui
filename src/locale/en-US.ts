@@ -42,6 +42,8 @@ import localeMode from '@/views/ai/model/locale/en-US';
 import localeModelScript from '@/views/ai/modelScript/locale/en-US';
 import localeAiOrder from '@/views/ai/order/locale/en-US';
 import localePayInfo from '@/views/ai/pay/PaymentInfo/locale/en-US';
+import localePayConfig from '@/views/ai/pay/config/locale/en-US';
+import localePayDeptAccount from '@/views/ai/pay/account/locale/en-US';
 import localeProduct from '@/views/ai/product/locale/en-US';
 import localeSettings from './en-US/settings';
 
@@ -121,5 +123,6 @@ export default {
   ...localeAiOrder,
   ...localePayInfo,
   ...localeProduct,
-
+  ...localePayConfig,
+  ...localePayDeptAccount,
 };

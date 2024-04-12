@@ -84,7 +84,7 @@ import checkPermission from '@/utils/permission';
   const data = reactive({
     // 查询参数
     queryParams: {
-            deptId: undefined,
+      deptId: undefined,
       createUser: undefined,
       page: 1,
       size: 10,
@@ -304,8 +304,8 @@ import checkPermission from '@/utils/permission';
 
 <template>
   <div class="app-container">
-    <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.deptaccount.list']" />
-    <a-card class="general-card" :title="$t('menu.ai.pay.deptaccount.list')">
+    <Breadcrumb :items="['menu.ai.pay', 'menu.ai.pay.deptAccount.list']" />
+    <a-card class="general-card" :title="$t('menu.ai.pay.deptAccount.list')">
       <!-- 头部区域 -->
       <div class="header">
         <!-- 搜索栏 -->
@@ -419,7 +419,7 @@ import checkPermission from '@/utils/permission';
         @selection-change="handleSelectionChange"
       >
         <template #columns>
-          <a-table-column title="商品id" data-index="id">
+          <a-table-column title="id" data-index="id">
             <template #cell="{ record }">
               <a-link @click="toDetail(record.id)">{{ record.id }}</a-link>
             </template>
@@ -518,7 +518,7 @@ import checkPermission from '@/utils/permission';
         @cancel="handleDetailCancel"
       >
         <a-descriptions :column="2" bordered size="large">
-          <a-descriptions-item label="商品id">
+          <a-descriptions-item label="id">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>

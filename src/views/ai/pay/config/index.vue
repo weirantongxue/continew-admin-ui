@@ -38,7 +38,7 @@ import checkPermission from '@/utils/permission';
     rules: {
       name: [{ required: true, message: '支付名称不能为空' }],
       icon: [{ required: true, message: '渠道图标不能为空' }],
-      way: [{ required: true, message: '支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]不能为空' }],
+      way: [{ required: true, message: '支付方式' }],
       sort: [{ required: true, message: '排序编号不能为空' }],
       remark: [{ required: true, message: '备注信息不能为空' }],
       params: [{ required: true, message: '配置参数不能为空' }],
@@ -365,12 +365,12 @@ import checkPermission from '@/utils/permission';
           </a-table-column>
           <a-table-column title="支付名称" data-index="name" />
           <a-table-column title="渠道图标" data-index="icon" />
-          <a-table-column title="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" data-index="way" />
+          <a-table-column title="支付方式" data-index="way" />
           <a-table-column title="排序编号" data-index="sort" />
           <a-table-column title="备注信息" data-index="remark" />
           <a-table-column title="配置参数" data-index="params" />
-          <a-table-column title="默认支付: [0=否的, 1=是的]" data-index="isDefault" />
-          <a-table-column title="方式状态: [0=关闭, 1=开启]" data-index="status" />
+          <a-table-column title="默认支付" data-index="isDefault" />
+          <a-table-column title="方式状态" data-index="status" />
           <a-table-column title="创建时间" data-index="createTime" />
           <a-table-column title="创建人" data-index="createUser" />
           <a-table-column
@@ -426,8 +426,8 @@ import checkPermission from '@/utils/permission';
           <a-form-item label="渠道图标" field="icon">
             <a-input v-model="form.icon" placeholder="请输入渠道图标" />
           </a-form-item>
-          <a-form-item label="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" field="way">
-            <a-input v-model="form.way" placeholder="请输入支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]" />
+          <a-form-item label="支付方式" field="way">
+            <a-input v-model="form.way" placeholder="请输入支付方式" />
           </a-form-item>
           <a-form-item label="排序编号" field="sort">
             <a-input v-model="form.sort" placeholder="请输入排序编号" />
@@ -476,7 +476,7 @@ import checkPermission from '@/utils/permission';
             </a-skeleton>
             <span v-else>{{ dataDetail.icon }}</span>
           </a-descriptions-item>
-          <a-descriptions-item label="支付方式: [1=余额支付, 2=微信支付, 3=支付宝支付]">
+          <a-descriptions-item label="支付方式">
             <a-skeleton v-if="detailLoading" :animation="true">
               <a-skeleton-line :rows="1" />
             </a-skeleton>

@@ -42,6 +42,8 @@ import localeMode from '@/views/ai/model/locale/zh-CN';
 import localeModelScript from '@/views/ai/modelScript/locale/zh-CN';
 import localeAiOrder from '@/views/ai/order/locale/zh-CN';
 import localePay from '@/views/ai/pay/PaymentInfo/locale/zh-CN';
+import localePayConfig from '@/views/ai/pay/config/locale/zh-CN';
+import localePayDeptAccount from '@/views/ai/pay/account/locale/zh-CN';
 import localeProduct from '@/views/ai/product/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
@@ -120,4 +122,6 @@ export default {
   ...localeAiOrder,
   ...localePay,
   ...localeProduct,
+  ...localePayConfig,
+  ...localePayDeptAccount,
 };

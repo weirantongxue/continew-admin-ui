@@ -1,3 +1,3 @@
 export default {
-  'menu.ai.pay.deptaccount.list': '部门账户',
+  'menu.ai.pay.deptAccount.list': '部门账户',
 };
