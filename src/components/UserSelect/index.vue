@@ -94,11 +94,13 @@ const emit = defineEmits<{
 interface Props {
   multiple?: boolean
   value: string | string[]
+  roleId?: string
 }
 
 // 查询表单
 const queryForm = reactive<UserQuery>({
   sort: ['t1.createTime,desc', 't1.id,desc'],
+  roleId: props.roleId,
 })
 
 // 用户列表

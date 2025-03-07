@@ -183,7 +183,7 @@ const handleRightMenuClick = async (mode: string, fileInfo: FileItem) => {
   if (mode === 'delete') {
     Modal.warning({
       title: '提示',
-      content: `是否确定删除文件 [${fileInfo.name}]？`,
+      content: `是否确定删除文件「${fileInfo.name}」？`,
       hideCancel: false,
       okButtonProps: { status: 'danger' },
       onOk: async () => {

@@ -1,17 +1,17 @@
 <template>
-  <div class="table-page">
-    <a-row justify="space-between" align="center" class="header page_header">
+  <div class="gi_page">
+    <!-- <a-row justify="space-between" align="center" class="header page_header">
       <a-space wrap>
         <div class="title">字典管理</div>
       </a-space>
-    </a-row>
+    </a-row> -->
     <SplitPanel>
       <template #left>
         <DictTree @node-click="handleSelectDict" />
       </template>
       <template #main>
         <a-row align="stretch" :gutter="14" class="h-full page_content">
-          <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" :xxl="24" flex="1" class="h-full ov-hidden">
+          <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" :xxl="24" flex="1" class="h-full overflow-hidden">
             <GiTable
               row-key="id"
               :data="dataList"
@@ -132,7 +132,7 @@ const reset = () => {
 // 删除
 const onDelete = (record: DictItemResp) => {
   return handleDelete(() => deleteDictItem(record.id), {
-    content: `是否确定删除字典「${record.label}」？`,
+    content: `是否确定删除字典项「${record.label}」？`,
     showModal: true,
   })
 }

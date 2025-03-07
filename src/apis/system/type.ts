@@ -38,6 +38,7 @@ export interface UserQuery {
   deptId?: string
   sort: Array<string>
   userIds?: Array<string>
+  roleId?: string
 }
 export interface UserPageQuery extends UserQuery, PageQuery {}
 
@@ -62,11 +63,29 @@ export type RoleDetailResp = RoleResp & {
   menuCheckStrictly: boolean
   deptCheckStrictly: boolean
 }
+export interface RoleUserResp {
+  id: string
+  username: string
+  nickname: string
+  gender: number
+  description: string
+  status: 1 | 2
+  isSystem?: boolean
+  deptId: string
+  deptName: string
+  roleIds: Array<number>
+  roleNames: Array<string>
+  disabled: boolean
+}
 export interface RoleQuery {
   description?: string
   sort: Array<string>
 }
-export interface RolePageQuery extends RoleQuery, PageQuery {}
+export interface RoleUserQuery {
+  description?: string
+  sort: Array<string>
+}
+export interface RoleUserPageQuery extends RoleUserQuery, PageQuery {}
 
 /** 菜单类型 */
 export interface MenuResp {
@@ -234,13 +253,11 @@ export interface StorageResp {
 }
 export interface StorageQuery {
   description?: string
-  status?: number
+  type?: number
   sort: Array<string>
 }
-export interface StoragePageQuery extends StorageQuery, PageQuery {
-}
 
-/** 客户端类型 */
+/** 终端类型 */
 export interface ClientResp {
   id: string
   clientId: string

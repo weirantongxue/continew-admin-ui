@@ -1,7 +1,7 @@
 <template>
-  <div class="table-page">
+  <div class="gi_table_page">
     <GiTable
-      title="客户端管理"
+      title=""
       row-key="id"
       :data="dataList"
       :columns="columns"
@@ -13,12 +13,12 @@
       @refresh="search"
     >
       <template #toolbar-left>
-        <a-input-search v-model="queryForm.clientKey" placeholder="搜索客户端Key" allow-clear @search="search" />
-        <a-input-search v-model="queryForm.clientSecret" placeholder="搜索客户端秘钥" allow-clear @search="search" />
+        <a-input-search v-model="queryForm.clientKey" placeholder="搜索终端Key" allow-clear @search="search" />
+        <a-input-search v-model="queryForm.clientSecret" placeholder="搜索终端秘钥" allow-clear @search="search" />
         <a-select
           v-model="queryForm.clientType"
           :options="client_type"
-          placeholder="请选择客户端类型"
+          placeholder="请选择终端类型"
           allow-clear
           style="width: 160px"
           @change="search"
@@ -114,7 +114,7 @@ const columns: TableInstanceColumns[] = [
     fixed: !isMobile() ? 'left' : undefined,
   },
   {
-    title: '客户端 ID',
+    title: '终端 ID',
     dataIndex: 'clientId',
     slotName: 'clientId',
     ellipsis: true,
@@ -125,8 +125,8 @@ const columns: TableInstanceColumns[] = [
       )
     },
   },
-  { title: '客户端 Key', dataIndex: 'clientKey', slotName: 'clientKey', ellipsis: true, tooltip: true, align: 'center' },
-  { title: '客户端秘钥', dataIndex: 'clientSecret', slotName: 'clientSecret', ellipsis: true, tooltip: true, align: 'center' },
+  { title: '终端 Key', dataIndex: 'clientKey', slotName: 'clientKey', ellipsis: true, tooltip: true, align: 'center' },
+  { title: '终端秘钥', dataIndex: 'clientSecret', slotName: 'clientSecret', ellipsis: true, tooltip: true, align: 'center' },
   {
     title: '认证类型',
     dataIndex: 'authType',
@@ -141,7 +141,7 @@ const columns: TableInstanceColumns[] = [
     },
   },
   {
-    title: '客户端类型',
+    title: '终端类型',
     dataIndex: 'clientType',
     slotName: 'clientType',
     ellipsis: true,
@@ -190,7 +190,7 @@ const reset = () => {
 // 删除
 const onDelete = (record: ClientResp) => {
   return handleDelete(() => deleteClient(record.id), {
-    content: `是否确定删除客户端「${record.clientKey}(${record.clientId})」？`,
+    content: `是否确定删除终端「${record.clientKey}(${record.clientId})」？`,
     showModal: true,
   })
 }

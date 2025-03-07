@@ -30,7 +30,7 @@
           </template>
           <template #extra="node">
             <a-trigger trigger="click" align-point animation-name="slide-dynamic-origin" auto-fit-transform-origin position="bl" scroll-to-close>
-              <icon-more-vertical v-if="has.hasPermOr(['system:dict:update', 'system:dict:delete'])" class="action" />
+              <icon-more v-if="has.hasPermOr(['system:dict:update', 'system:dict:delete'])" class="action" />
               <template #content>
                 <RightMenu :data="node" @on-menu-item-click="onMenuItemClick" />
               </template>
@@ -125,7 +125,7 @@ const onMenuItemClick = (mode: string, node: DictResp) => {
   } else if (mode === 'delete') {
     Modal.warning({
       title: '提示',
-      content: `是否确定删除 [${node.name}]？`,
+      content: `是否确定删除字典「${node.name}」？`,
       hideCancel: false,
       okButtonProps: { status: 'danger' },
       onBeforeOk: async () => {
@@ -156,6 +156,14 @@ onMounted(() => {
   margin: 5px 0;
   .action {
     opacity: 0;
+    margin-right: 8px;
+    padding: 4px;
+    transition: all 0.25s;
+    border-radius: 8px;
+
+    &:hover{
+      background-color: var(--color-bg-1);
+    }
   }
   &:hover {
     background-color: var(--color-secondary-hover);
@@ -190,6 +198,9 @@ onMounted(() => {
   }
   .arco-typography {
     color: rgb(var(--primary-6));
+  }
+  .action {
+    opacity: 1;
   }
 }
 

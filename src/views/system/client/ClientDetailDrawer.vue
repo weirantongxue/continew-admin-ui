@@ -1,16 +1,16 @@
 <template>
-  <a-drawer v-model:visible="visible" title="客户端详情" :width="width >= 600 ? 600 : '100%'" :footer="false">
+  <a-drawer v-model:visible="visible" title="终端详情" :width="width >= 500 ? 500 : '100%'" :footer="false">
     <a-descriptions :column="1" size="large" class="general-description">
       <a-descriptions-item label="ID">{{ dataDetail?.id }}</a-descriptions-item>
-      <a-descriptions-item label="客户端ID"><a-typography-paragraph :copyable="!!dataDetail?.clientId">{{ dataDetail?.clientId }}</a-typography-paragraph></a-descriptions-item>
-      <a-descriptions-item label="客户端Key">{{ dataDetail?.clientKey }}</a-descriptions-item>
-      <a-descriptions-item label="客户端秘钥">{{ dataDetail?.clientSecret }}</a-descriptions-item>
+      <a-descriptions-item label="终端ID"><a-typography-paragraph :copyable="!!dataDetail?.clientId">{{ dataDetail?.clientId }}</a-typography-paragraph></a-descriptions-item>
+      <a-descriptions-item label="终端Key">{{ dataDetail?.clientKey }}</a-descriptions-item>
+      <a-descriptions-item label="终端秘钥">{{ dataDetail?.clientSecret }}</a-descriptions-item>
       <a-descriptions-item label="认证类型">
         <a-space>
           <GiCellTag v-for="(item, index) in dataDetail?.authType" :key="index" :value="item" :dict="auth_type_enum" />
         </a-space>
       </a-descriptions-item>
-      <a-descriptions-item label="客户端类型">
+      <a-descriptions-item label="终端类型">
         <GiCellTag :value="dataDetail?.clientType" :dict="client_type" />
       </a-descriptions-item>
       <a-descriptions-item label="Token最低活跃频率">{{ dataDetail?.activeTimeout }}</a-descriptions-item>

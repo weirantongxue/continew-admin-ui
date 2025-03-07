@@ -1,4 +1,4 @@
-@import './var.scss';
+@use './var.scss' as *;
 
 body {
   --margin: 14px; // 通用外边距
@@ -56,16 +56,4 @@ a:hover {
   cursor: pointer;
   color: inherit;
   text-decoration: none;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.h-full {
-  height: 100%;
-}
-
-.ov-hidden {
-  overflow: hidden;
 }

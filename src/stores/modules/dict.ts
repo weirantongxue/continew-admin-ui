@@ -1,52 +1,39 @@
 import { defineStore } from 'pinia'
-import type { DictState, LabelValueState } from '@/types/global'
 
 const storeSetup = () => {
-  const dictData = ref<DictState[]>([])
+  const dictData = ref<Record<string, App.DictItem[]>>({})
 
   // 设置字典
-  const setDict = (_code: string, items: Array<LabelValueState>) => {
-    if (_code !== null && _code !== '') {
-      dictData.value.push({
-        code: _code,
-        items,
-      })
+  const setDict = (code: string, items: App.DictItem[]) => {
+    if (code) {
+      dictData.value[code] = items
     }
   }
 
   // 获取字典
-  const getDict = (_code: string) => {
-    if (_code == null || _code === '') {
+  const getDict = (code: string) => {
+    if (!code) {
       return null
     }
-    for (let i = 0; i < dictData.value.length; i += 1) {
-      if (dictData.value[i].code === _code) {
-        return dictData.value[i].items
-      }
-    }
-    return null
+    return dictData.value[code] || null
   }
 
   // 删除字典
-  const deleteDict = (_code: string) => {
-    let bln = false
-    try {
-      for (let i = 0; i < dictData.value.length; i += 1) {
-        if (dictData.value[i].code === _code) {
-          dictData.value.splice(i, 1)
-          return true
-        }
-      }
-    } catch (e) {
-      bln = false
+  const deleteDict = (code: string) => {
+    if (!code || !(code in dictData.value)) {
+      return false
     }
-    return bln
+    delete dictData.value[code]
+    return true
   }
+
   // 清空字典
   const cleanDict = () => {
-    dictData.value = []
+    dictData.value = {}
   }
+
   return {
+    dictData,
     setDict,
     getDict,
     deleteDict,
@@ -54,4 +41,4 @@ const storeSetup = () => {
   }
 }
 
-export const useDictStore = defineStore('dict', storeSetup, { persist: true })
+export const useDictStore = defineStore('dict', storeSetup)

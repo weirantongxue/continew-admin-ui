@@ -69,19 +69,17 @@ export const systemRoutes: RouteRecordRaw[] = [
     meta: { title: '关于项目', icon: 'apps', hidden: false, sort: 999 },
     children: [
       {
-        path: '/about/document/continew',
-        component: () => import('@/views/about/document/continew/index.vue'),
-        meta: { title: '在线文档', icon: 'continew', hidden: false, keepAlive: true },
-      },
-      {
         path: '/about/document/api',
         component: () => import('@/views/about/document/api/index.vue'),
         meta: { title: '接口文档', icon: 'continew', hidden: false, keepAlive: true },
       },
       {
-        path: '/about/document/arco-design-vue',
-        component: () => import('@/views/about/document/arco-design-vue/index.vue'),
-        meta: { title: 'Arco Design文档', icon: 'arco', hidden: false, keepAlive: true },
+        path: 'https://continew.top',
+        meta: { title: '在线文档', icon: 'continew', hidden: false },
+      },
+      {
+        path: 'https://arco.design/vue/component/button',
+        meta: { title: 'Arco Design文档', icon: 'arco', hidden: false },
       },
       {
         path: '/about/source',

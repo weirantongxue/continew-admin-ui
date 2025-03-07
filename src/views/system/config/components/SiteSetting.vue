@@ -72,24 +72,23 @@
           </a-upload>
         </template>
       </a-form-item>
-      <a-form-item class="input-item" field="SITE_TITLE" :label="siteConfig.SITE_TITLE.name">
-        <a-input v-model.trim="form.SITE_TITLE" class="input-width" placeholder="请输入系统标题" :max-length="18" show-word-limit />
+      <a-form-item class="input-item" field="SITE_TITLE" :label="siteConfig.SITE_TITLE.name" :help="siteConfig.SITE_TITLE.description">
+        <a-input v-model.trim="form.SITE_TITLE" placeholder="请输入系统名称" :max-length="18" show-word-limit />
       </a-form-item>
-      <a-form-item class="input-item" field="SITE_DESCRIPTION" :label="siteConfig.SITE_DESCRIPTION.name">
+      <a-form-item class="input-item" field="SITE_DESCRIPTION" :label="siteConfig.SITE_DESCRIPTION.name" :help="siteConfig.SITE_DESCRIPTION.description">
         <a-textarea
           v-model.trim="form.SITE_DESCRIPTION"
-          class="input-width"
           placeholder="请输入系统描述"
           :auto-size="{ minRows: 1, maxRows: 3 }"
         />
       </a-form-item>
-      <a-form-item class="input-item" field="SITE_COPYRIGHT" :label="siteConfig.SITE_COPYRIGHT.name">
-        <a-input v-model.trim="form.SITE_COPYRIGHT" class="input-width" placeholder="请输入版权信息" />
+      <a-form-item class="input-item" field="SITE_COPYRIGHT" :label="siteConfig.SITE_COPYRIGHT.name" :help="siteConfig.SITE_COPYRIGHT.description">
+        <a-input v-model.trim="form.SITE_COPYRIGHT" placeholder="请输入版权声明" />
       </a-form-item>
-      <a-form-item field="SITE_BEIAN" :label="siteConfig.SITE_BEIAN.name">
-        <a-input v-model.trim="form.SITE_BEIAN" class="input-width" placeholder="请输入备案号" :max-length="30" show-word-limit />
+      <a-form-item field="SITE_BEIAN" :label="siteConfig.SITE_BEIAN.name" :help="siteConfig.SITE_BEIAN.description">
+        <a-input v-model.trim="form.SITE_BEIAN" placeholder="请输入备案号" :max-length="30" show-word-limit />
       </a-form-item>
-      <a-space style="margin-bottom: 16px">
+      <a-space style="margin-top: 16px">
         <a-button v-if="!isUpdate" v-permission="['system:config:update']" type="primary" @click="onUpdate">
           <template #icon>
             <icon-edit />
@@ -144,9 +143,9 @@ const [form] = useResetReactive({
   SITE_COPYRIGHT: '',
 })
 const rules: FormInstance['rules'] = {
-  SITE_TITLE: [{ required: true, message: '请输入系统标题' }],
+  SITE_TITLE: [{ required: true, message: '请输入系统名称' }],
   SITE_DESCRIPTION: [{ required: true, message: '请输入系统描述' }],
-  SITE_COPYRIGHT: [{ required: true, message: '请输入版权信息' }],
+  SITE_COPYRIGHT: [{ required: true, message: '请输入版权声明' }],
 }
 
 const siteConfig = ref<SiteConfig>({
@@ -313,7 +312,8 @@ onMounted(() => {
   line-height: 46px;
 }
 
-.input-width {
+:deep(.form .arco-input-wrapper),
+:deep(.form .arco-textarea-wrapper) {
   width: 500px;
 }
 
@@ -327,9 +327,8 @@ onMounted(() => {
 }
 
 // responsive
-.mobile {
-  .input-width {
-    width: 100%;
-  }
+:deep(.mobile .form .arco-input-wrapper),
+:deep(.mobile .form .arco-textarea-wrapper) {
+  width: 100%;
 }
 </style>

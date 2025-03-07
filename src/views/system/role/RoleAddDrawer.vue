@@ -1,10 +1,10 @@
 <template>
   <a-drawer
     v-model:visible="visible"
-    title="修改角色"
+    :title="title"
     :mask-closable="false"
     :esc-to-close="false"
-    :width="width >= 600 ? 600 : '100%'"
+    :width="width >= 500 ? 500 : '100%'"
     @before-ok="save"
     @close="reset"
   >
@@ -12,10 +12,10 @@
       <fieldset>
         <legend>基础信息</legend>
         <a-form-item label="名称" field="name">
-          <a-input v-model.trim="form.name" placeholder="请输入名称" />
+          <a-input v-model.trim="form.name" placeholder="请输入名称" max-length="30" show-word-limit />
         </a-form-item>
         <a-form-item label="编码" field="code">
-          <a-input v-model.trim="form.code" placeholder="请输入编码" :disabled="true" />
+          <a-input v-model.trim="form.code" placeholder="请输入编码" max-length="30" show-word-limit :disabled="isUpdate" />
         </a-form-item>
         <a-form-item label="排序" field="sort">
           <a-input-number v-model="form.sort" placeholder="请输入排序" :min="1" mode="button" />
@@ -28,26 +28,6 @@
             :max-length="200"
             :auto-size="{ minRows: 3, maxRows: 5 }"
           />
-        </a-form-item>
-      </fieldset>
-      <fieldset>
-        <legend>功能权限</legend>
-        <a-form-item hide-label :disabled="form.isSystem">
-          <a-space>
-            <a-checkbox v-model="isMenuExpanded" @change="onExpanded('menu')">展开/折叠</a-checkbox>
-            <a-checkbox v-model="isMenuCheckAll" @change="onCheckAll('menu')">全选/全不选</a-checkbox>
-            <a-checkbox v-model="form.menuCheckStrictly">父子联动</a-checkbox>
-          </a-space>
-          <template #extra>
-            <a-tree
-              ref="menuTreeRef"
-              class="menu-tree"
-              :data="menuList"
-              :default-expand-all="isMenuExpanded"
-              :check-strictly="!form.menuCheckStrictly"
-              checkable
-            />
-          </template>
         </a-form-item>
       </fieldset>
       <fieldset>
@@ -84,9 +64,11 @@
 <script setup lang="ts">
 import { type FormInstance, Message, type TreeNodeData } from '@arco-design/web-vue'
 import { useWindowSize } from '@vueuse/core'
-import { getRole, updateRole } from '@/apis/system/role'
+import type { GiForm } from '@/components/GiForm'
+
 import { useResetReactive } from '@/hooks'
-import { useDept, useDict, useMenu } from '@/hooks/app'
+import { useDept, useDict } from '@/hooks/app'
+import { addRole, getRole, updateRole } from '@/apis'
 
 const emit = defineEmits<{
   (e: 'save-success'): void
@@ -96,10 +78,11 @@ const { width } = useWindowSize()
 
 const dataId = ref('')
 const visible = ref(false)
-const formRef = ref<FormInstance>()
+const isUpdate = computed(() => !!dataId.value)
+const title = computed(() => (isUpdate.value ? '修改角色' : '新增角色'))
+const formRef = ref<InstanceType<typeof GiForm>>()
 const { data_scope_enum } = useDict('data_scope_enum')
 const { deptList, getDeptList } = useDept()
-const { menuList, getMenuList } = useMenu()
 
 const rules: FormInstance['rules'] = {
   name: [{ required: true, message: '请输入名称' }],
@@ -108,42 +91,22 @@ const rules: FormInstance['rules'] = {
 }
 
 const [form, resetForm] = useResetReactive({
-  menuCheckStrictly: true,
   deptCheckStrictly: true,
   sort: 999,
   dataScope: 4,
 })
 
-const menuTreeRef = ref()
 const deptTreeRef = ref()
-const isMenuExpanded = ref(false)
 const isDeptExpanded = ref(true)
-const isMenuCheckAll = ref(false)
 const isDeptCheckAll = ref(false)
 // 重置
 const reset = () => {
-  isMenuExpanded.value = false
-  isMenuCheckAll.value = false
   isDeptExpanded.value = true
   isDeptCheckAll.value = false
-  menuTreeRef.value?.expandAll(isMenuExpanded.value)
-  menuTreeRef.value?.checkAll(false)
   deptTreeRef.value?.expandAll(isDeptExpanded.value)
   deptTreeRef.value?.checkAll(false)
   formRef.value?.resetFields()
   resetForm()
-}
-
-// 获取所有选中的菜单
-const getMenuAllCheckedKeys = () => {
-  // 获取目前被选中的菜单
-  const checkedNodes = menuTreeRef.value?.getCheckedNodes()
-  const checkedKeys = checkedNodes.map((item: TreeNodeData) => item.key)
-  // 获取半选中的菜单
-  const halfCheckedNodes = menuTreeRef.value?.getHalfCheckedNodes()
-  const halfCheckedKeys = halfCheckedNodes.map((item: TreeNodeData) => item.key)
-  checkedKeys.unshift(...halfCheckedKeys)
-  return checkedKeys
 }
 
 // 获取所有选中的部门
@@ -162,32 +125,28 @@ const getDeptAllCheckedKeys = () => {
 }
 
 // 展开/折叠
-const onExpanded = (type: string) => {
-  if (type === 'menu') {
-    menuTreeRef.value?.expandAll(isMenuExpanded.value)
-  } else if (type === 'dept') {
-    deptTreeRef.value?.expandAll(isDeptExpanded.value)
-  }
+const onExpanded = () => {
+  deptTreeRef.value?.expandAll(isDeptExpanded.value)
 }
 
 // 全选/全不选
-const onCheckAll = (type: string) => {
-  if (type === 'menu') {
-    menuTreeRef.value?.checkAll(isMenuCheckAll.value)
-  } else if (type === 'dept') {
-    deptTreeRef.value?.checkAll(isDeptCheckAll.value)
-  }
+const onCheckAll = () => {
+  deptTreeRef.value?.checkAll(isDeptCheckAll.value)
 }
 
 // 保存
 const save = async () => {
+  const isInvalid = await formRef.value?.validate()
+  if (isInvalid) return false
   try {
-    const isInvalid = await formRef.value?.validate()
-    if (isInvalid) return false
-    form.menuIds = getMenuAllCheckedKeys()
     form.deptIds = getDeptAllCheckedKeys()
-    await updateRole(form, dataId.value)
-    Message.success('修改成功')
+    if (isUpdate.value) {
+      await updateRole(form, dataId.value)
+      Message.success('修改成功')
+    } else {
+      await addRole(form)
+      Message.success('新增成功')
+    }
     emit('save-success')
     return true
   } catch (error) {
@@ -195,23 +154,25 @@ const save = async () => {
   }
 }
 
-// 打开
-const onOpen = async (id: string) => {
+// 新增
+const onAdd = async () => {
   reset()
-  dataId.value = id
-  if (!menuList.value.length) {
-    await getMenuList()
-  }
   if (!deptList.value.length) {
     await getDeptList()
   }
+  dataId.value = ''
+  visible.value = true
+}
+
+// 修改
+const onUpdate = async (id: string) => {
+  reset()
+  if (!deptList.value.length) {
+    await getDeptList()
+  }
+  dataId.value = id
   const { data } = await getRole(id)
   Object.assign(form, data)
-  data.menuIds?.forEach((node) => {
-    nextTick(() => {
-      menuTreeRef.value?.checkNode(node, true, true)
-    })
-  })
   data.deptIds?.forEach((node) => {
     nextTick(() => {
       deptTreeRef.value?.checkNode(node, true, true)
@@ -220,7 +181,7 @@ const onOpen = async (id: string) => {
   visible.value = true
 }
 
-defineExpose({ onOpen })
+defineExpose({ onAdd, onUpdate })
 </script>
 
 <style scoped lang="scss">
@@ -235,13 +196,5 @@ fieldset legend {
   padding: 2px 5px 2px 5px;
   border: 1px solid var(--color-neutral-3);
   border-radius: 3px;
-}
-.menu-tree{
-  :deep(.arco-tree-node-is-leaf) {
-    display: inline-flex;
-  }
-  :deep(.arco-tree-node-indent-block){
-    width: 10px;
-  }
 }
 </style>

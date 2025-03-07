@@ -1,9 +1,9 @@
 <template>
   <a-modal
     v-model:visible="visible" :title="title" :mask-closable="false" :esc-to-close="false"
-    :width="width >= 600 ? 600 : '100%'" draggable @before-ok="save" @ok="saveAfter" @close="reset"
+    :width="width >= 500 ? 500 : '100%'" draggable @before-ok="save" @ok="saveAfter" @close="reset"
   >
-    <GiForm ref="formRef" v-model="form" :options="options" :columns="columns">
+    <GiForm ref="formRef" v-model="form" :columns="columns">
       <template #captcha>
         <a-input v-model="form.captcha" placeholder="请输入验证码" :max-length="6" allow-clear style="flex: 1 1" />
         <a-button
@@ -28,7 +28,7 @@ import NProgress from 'nprogress'
 import { type BehaviorCaptchaReq, getEmailCaptcha, updateUserEmail, updateUserPassword, updateUserPhone } from '@/apis'
 import { encryptByRsa } from '@/utils/encrypt'
 import { useUserStore } from '@/stores'
-import { type Columns, GiForm, type Options } from '@/components/GiForm'
+import { type ColumnItem, GiForm } from '@/components/GiForm'
 import { useResetReactive } from '@/hooks'
 import * as Regexp from '@/utils/regexp'
 import modalErrorWrapper from '@/utils/modal-error-wrapper'
@@ -44,11 +44,6 @@ const title = computed(
 )
 const formRef = ref<InstanceType<typeof GiForm>>()
 
-const options: Options = {
-  form: { size: 'large' },
-  btns: { hide: true },
-}
-
 const [form, resetForm] = useResetReactive({
   phone: '',
   email: '',
@@ -58,11 +53,15 @@ const [form, resetForm] = useResetReactive({
   rePassword: '',
 })
 
-const columns: Columns = reactive([
+const columns: ColumnItem[] = reactive([
   {
     label: '手机号',
     field: 'phone',
     type: 'input',
+    span: 24,
+    props: {
+      showWordLimit: false,
+    },
     rules: [
       { required: true, message: '请输入手机号' },
       { match: Regexp.Phone, message: '请输入正确的手机号' },
@@ -75,6 +74,7 @@ const columns: Columns = reactive([
     label: '邮箱',
     field: 'email',
     type: 'input',
+    span: 24,
     rules: [
       { required: true, message: '请输入邮箱' },
       { match: Regexp.Email, message: '请输入正确的邮箱' },
@@ -87,6 +87,7 @@ const columns: Columns = reactive([
     label: '验证码',
     field: 'captcha',
     type: 'input',
+    span: 24,
     rules: [{ required: true, message: '请输入验证码' }],
     hide: () => {
       return !['phone', 'email'].includes(verifyType.value)
@@ -96,6 +97,7 @@ const columns: Columns = reactive([
     label: '当前密码',
     field: 'oldPassword',
     type: 'input-password',
+    span: 24,
     rules: [{ required: true, message: '请输入当前密码' }],
     hide: () => {
       return !userInfo.value.pwdResetTime
@@ -105,6 +107,7 @@ const columns: Columns = reactive([
     label: '新密码',
     field: 'newPassword',
     type: 'input-password',
+    span: 24,
     rules: [
       { required: true, message: '请输入新密码' },
       {
@@ -125,6 +128,7 @@ const columns: Columns = reactive([
     label: '确认新密码',
     field: 'rePassword',
     type: 'input-password',
+    span: 24,
     props: {
       placeholder: '请再次输入新密码',
     },

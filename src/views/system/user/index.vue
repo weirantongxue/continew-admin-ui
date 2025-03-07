@@ -1,92 +1,83 @@
 <template>
-  <div class="table-page">
-    <a-row justify="space-between" align="center" class="header page_header">
-      <a-space wrap>
-        <div class="title">用户管理</div>
-      </a-space>
-    </a-row>
+  <div class="gi_page">
     <SplitPanel size="20%">
       <template #left>
         <DeptTree @node-click="handleSelectDept" />
       </template>
       <template #main>
-        <a-row align="stretch" :gutter="14" class="h-full page_content">
-          <a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" :xxl="24" class="h-full ov-hidden">
-            <GiTable
-              row-key="id"
-              :data="dataList"
-              :columns="columns"
-              :loading="loading"
-              :scroll="{ x: '100%', y: '100%', minWidth: 1500 }"
-              :pagination="pagination"
-              :disabled-tools="['size']"
-              :disabled-column-keys="['nickname']"
-              @refresh="search"
-            >
-              <template #top>
-                <GiForm v-model="queryForm" :options="options" :columns="queryFormColumns" @search="search" @reset="reset"></GiForm>
-              </template>
-              <template #toolbar-left>
-                <a-button v-permission="['system:user:add']" type="primary" @click="onAdd">
-                  <template #icon><icon-plus /></template>
-                  <template #default>新增</template>
+        <GiTable
+          row-key="id"
+          :data="dataList"
+          :columns="columns"
+          :loading="loading"
+          :scroll="{ x: '100%', y: '100%', minWidth: 1500 }"
+          :pagination="pagination"
+          :disabled-tools="['size']"
+          :disabled-column-keys="['nickname']"
+          @refresh="search"
+        >
+          <template #top>
+            <GiForm v-model="queryForm" search :columns="queryFormColumns" size="medium" @search="search" @reset="reset"></GiForm>
+          </template>
+          <template #toolbar-left>
+            <a-button v-permission="['system:user:add']" type="primary" @click="onAdd">
+              <template #icon><icon-plus /></template>
+              <template #default>新增</template>
+            </a-button>
+            <a-button v-permission="['system:user:import']" @click="onImport">
+              <template #icon><icon-upload /></template>
+              <template #default>导入</template>
+            </a-button>
+          </template>
+          <template #toolbar-right>
+            <a-button v-permission="['system:user:export']" @click="onExport">
+              <template #icon><icon-download /></template>
+              <template #default>导出</template>
+            </a-button>
+          </template>
+          <template #nickname="{ record }">
+            <GiCellAvatar :avatar="record.avatar" :name="record.nickname" />
+          </template>
+          <template #gender="{ record }">
+            <GiCellGender :gender="record.gender" />
+          </template>
+          <template #roleNames="{ record }">
+            <GiCellTags :data="record.roleNames" />
+          </template>
+          <template #status="{ record }">
+            <GiCellStatus :status="record.status" />
+          </template>
+          <template #isSystem="{ record }">
+            <a-tag v-if="record.isSystem" color="red" size="small">是</a-tag>
+            <a-tag v-else color="arcoblue" size="small">否</a-tag>
+          </template>
+          <template #action="{ record }">
+            <a-space>
+              <a-link v-permission="['system:user:detail']" title="详情" @click="onDetail(record)">详情</a-link>
+              <a-link v-permission="['system:user:update']" title="修改" @click="onUpdate(record)">修改</a-link>
+              <a-link
+                v-permission="['system:user:delete']"
+                status="danger"
+                :disabled="record.isSystem"
+                :title="record.isSystem ? '系统内置数据不能删除' : '删除'"
+                @click="onDelete(record)"
+              >
+                删除
+              </a-link>
+              <a-dropdown>
+                <a-button v-if="has.hasPermOr(['system:user:resetPwd', 'system:user:updateRole'])" type="text" size="mini" title="更多">
+                  <template #icon>
+                    <icon-more :size="16" />
+                  </template>
                 </a-button>
-                <a-button v-permission="['system:user:import']" @click="onImport">
-                  <template #icon><icon-upload /></template>
-                  <template #default>导入</template>
-                </a-button>
-              </template>
-              <template #toolbar-right>
-                <a-button v-permission="['system:user:export']" @click="onExport">
-                  <template #icon><icon-download /></template>
-                  <template #default>导出</template>
-                </a-button>
-              </template>
-              <template #nickname="{ record }">
-                <GiCellAvatar :avatar="record.avatar" :name="record.nickname" />
-              </template>
-              <template #gender="{ record }">
-                <GiCellGender :gender="record.gender" />
-              </template>
-              <template #roleNames="{ record }">
-                <GiCellTags :data="record.roleNames" />
-              </template>
-              <template #status="{ record }">
-                <GiCellStatus :status="record.status" />
-              </template>
-              <template #isSystem="{ record }">
-                <a-tag v-if="record.isSystem" color="red" size="small">是</a-tag>
-                <a-tag v-else color="arcoblue" size="small">否</a-tag>
-              </template>
-              <template #action="{ record }">
-                <a-space>
-                  <a-link v-permission="['system:user:detail']" title="详情" @click="onDetail(record)">详情</a-link>
-                  <a-link v-permission="['system:user:update']" title="修改" @click="onUpdate(record)">修改</a-link>
-                  <a-link
-                    v-permission="['system:user:delete']"
-                    status="danger"
-                    :disabled="record.isSystem"
-                    :title="record.isSystem ? '系统内置数据不能删除' : '删除'"
-                    @click="onDelete(record)"
-                  >
-                    删除
-                  </a-link>
-                  <a-dropdown>
-                    <a-button v-if="has.hasPermOr(['system:user:resetPwd', 'system:user:updateRole'])" type="text" size="mini" title="更多">
-                      <template #icon>
-                        <icon-more :size="16" />
-                      </template>
-                    </a-button>
-                    <template #content>
-                      <a-doption v-permission="['system:user:resetPwd']" title="重置密码" @click="onResetPwd(record)">重置密码</a-doption>
-                      <a-doption v-permission="['system:user:updateRole']" title="分配角色" @click="onUpdateRole(record)">分配角色</a-doption>
-                    </template>
-                  </a-dropdown>
-                </a-space>
-              </template>
-            </GiTable>
-          </a-col>
-        </a-row>
+                <template #content>
+                  <a-doption v-permission="['system:user:resetPwd']" title="重置密码" @click="onResetPwd(record)">重置密码</a-doption>
+                  <a-doption v-permission="['system:user:updateRole']" title="分配角色" @click="onUpdateRole(record)">分配角色</a-doption>
+                </template>
+              </a-dropdown>
+            </a-space>
+          </template>
+        </GiTable>
       </template>
     </SplitPanel>
 
@@ -106,49 +97,47 @@ import UserDetailDrawer from './UserDetailDrawer.vue'
 import UserResetPwdModal from './UserResetPwdModal.vue'
 import UserUpdateRoleModal from './UserUpdateRoleModal.vue'
 import { type UserResp, deleteUser, exportUser, listUser } from '@/apis/system/user'
-import type { Columns, Options } from '@/components/GiForm'
 import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { DisEnableStatusList } from '@/constant/common'
 import { useDownload, useResetReactive, useTable } from '@/hooks'
 import { isMobile } from '@/utils'
 import has from '@/utils/has'
+import type { ColumnItem } from '@/components/GiForm'
 
 defineOptions({ name: 'SystemUser' })
 
-const options: Options = reactive({
-  form: { layout: 'inline' },
-  grid: { cols: { xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 3 } },
-  fold: { enable: true, index: 1, defaultCollapsed: true },
-})
 const [queryForm, resetForm] = useResetReactive({
   sort: ['t1.id,desc'],
 })
-const queryFormColumns: Columns = reactive([
+const queryFormColumns: ColumnItem[] = reactive([
   {
     type: 'input',
     field: 'description',
+    span: { xs: 24, sm: 8, xxl: 8 },
     formItemProps: {
       hideLabel: true,
     },
     props: {
       placeholder: '搜索用户名/昵称/描述',
+      showWordLimit: false,
     },
   },
   {
     type: 'select',
     field: 'status',
-    options: DisEnableStatusList,
+    span: { xs: 24, sm: 6, xxl: 8 },
     formItemProps: {
       hideLabel: true,
     },
     props: {
+      options: DisEnableStatusList,
       placeholder: '请选择状态',
     },
   },
   {
     type: 'range-picker',
     field: 'createTime',
-    span: { lg: 2, xl: 2, xxl: 1 },
+    span: { xs: 24, sm: 10, xxl: 8 },
     formItemProps: {
       hideLabel: true,
     },

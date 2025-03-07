@@ -9,7 +9,7 @@
     @before-ok="save"
     @close="reset"
   >
-    <GiForm ref="formRef" v-model="form" :options="options" :columns="columns" />
+    <GiForm ref="formRef" v-model="form" :columns="columns" layout="vertical" />
   </a-modal>
 </template>
 
@@ -18,7 +18,7 @@ import { Message } from '@arco-design/web-vue'
 import { useWindowSize } from '@vueuse/core'
 import CryptoJS from 'crypto-js'
 import { addClient, getClient, updateClient } from '@/apis/system/client'
-import { type Columns, GiForm, type Options } from '@/components/GiForm'
+import { type ColumnItem, GiForm } from '@/components/GiForm'
 import { DisEnableStatusList } from '@/constant/common'
 import { useResetReactive } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -32,15 +32,9 @@ const { width } = useWindowSize()
 const dataId = ref('')
 const visible = ref(false)
 const isUpdate = computed(() => !!dataId.value)
-const title = computed(() => (isUpdate.value ? '修改客户端' : '新增客户端'))
+const title = computed(() => (isUpdate.value ? '修改终端' : '新增终端'))
 const formRef = ref<InstanceType<typeof GiForm>>()
 const { client_type, auth_type_enum } = useDict('auth_type_enum', 'client_type')
-
-const options: Options = {
-  form: { size: 'large', layout: 'vertical' },
-  btns: { hide: true },
-  grid: { cols: 2 },
-}
 
 const [form, resetForm] = useResetReactive({
   activeTimeout: 1800,
@@ -54,26 +48,25 @@ const handleGenerate = () => {
   form.clientSecret = CryptoJS.MD5(`${timestamp}`).toString(CryptoJS.enc.Hex)
 }
 
-const columns: Columns = reactive([
+const columns: ColumnItem[] = reactive([
   {
-    label: '客户端 Key',
+    label: '终端 Key',
     field: 'clientKey',
     type: 'input',
-    rules: [{ required: true, message: '请输入客户端 Key' }],
-    span: 2,
-    disabled: () => {
-      return isUpdate.value
+    span: 24,
+    required: true,
+    props: {
+      maxLength: 32,
     },
+    disabled: () => isUpdate.value,
   },
   {
-    label: '客户端秘钥',
+    label: '终端秘钥',
     field: 'clientSecret',
     type: 'input',
-    rules: [{ required: true, message: '请输入客户端秘钥' }],
-    span: 2,
-    disabled: () => {
-      return isUpdate.value
-    },
+    span: 24,
+    required: true,
+    disabled: () => isUpdate.value,
     slots: {
       append: () => (
         <a-button onClick={handleGenerate}>
@@ -89,19 +82,20 @@ const columns: Columns = reactive([
     label: '认证类型',
     field: 'authType',
     type: 'select',
-    options: auth_type_enum,
+    required: true,
     props: {
+      options: auth_type_enum,
       multiple: true,
       maxTagCount: 2,
     },
-    rules: [{ required: true, message: '请选择认证类型' }],
   },
   {
-    label: '客户端类型',
+    label: '终端类型',
     field: 'clientType',
     type: 'select',
-    options: client_type,
-    rules: [{ required: true, message: '请选择客户端类型' }],
+    props: {
+      options: client_type,
+    },
   },
   {
     label: () => (
@@ -145,11 +139,11 @@ const columns: Columns = reactive([
     label: '状态',
     field: 'status',
     type: 'radio-group',
+    required: true,
     props: {
       type: 'button',
       options: DisEnableStatusList,
     },
-    rules: [{ required: true, message: '请选择状态' }],
   },
 ])
 

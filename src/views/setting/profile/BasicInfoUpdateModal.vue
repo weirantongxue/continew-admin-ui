@@ -9,7 +9,7 @@
     @before-ok="save"
     @close="reset"
   >
-    <GiForm ref="formRef" v-model="form" :options="options" :columns="columns" />
+    <GiForm ref="formRef" v-model="form" :columns="columns" />
   </a-modal>
 </template>
 
@@ -17,7 +17,7 @@
 import { useWindowSize } from '@vueuse/core'
 import { Message } from '@arco-design/web-vue'
 import { updateUserBaseInfo } from '@/apis/system'
-import { type Columns, GiForm, type Options } from '@/components/GiForm'
+import { type ColumnItem, GiForm } from '@/components/GiForm'
 import { useUserStore } from '@/stores'
 import { useResetReactive } from '@/hooks'
 
@@ -28,32 +28,31 @@ const userInfo = computed(() => userStore.userInfo)
 const visible = ref(false)
 const formRef = ref<InstanceType<typeof GiForm>>()
 
-const options: Options = {
-  form: { size: 'large' },
-  btns: { hide: true },
-}
-
 const [form, resetForm] = useResetReactive({
   nickname: userInfo.value.nickname,
   gender: userInfo.value.gender,
 })
 
-const columns: Columns = reactive([
+const columns: ColumnItem[] = reactive([
   {
     label: '昵称',
     field: 'nickname',
     type: 'input',
+    span: 24,
     rules: [{ required: true, message: '请输入昵称' }],
   },
   {
     label: '性别',
     field: 'gender',
     type: 'radio-group',
-    options: [
-      { label: '男', value: 1 },
-      { label: '女', value: 2 },
-      { label: '未知', value: 0, disabled: true },
-    ],
+    span: 24,
+    props: {
+      options: [
+        { label: '男', value: 1 },
+        { label: '女', value: 2 },
+        { label: '未知', value: 0, disabled: true },
+      ],
+    },
     rules: [{ required: true, message: '请选择性别' }],
   },
 ])

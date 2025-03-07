@@ -6,7 +6,7 @@ export type * from './type'
 const BASE_URL = '/system/menu'
 
 /** @desc 查询菜单列表 */
-export function listMenu(query: T.MenuQuery) {
+export function listMenu(query?: T.MenuQuery) {
   return http.get<T.MenuResp[]>(`${BASE_URL}/tree`, query)
 }
 
