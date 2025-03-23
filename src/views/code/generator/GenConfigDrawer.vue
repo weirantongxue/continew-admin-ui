@@ -123,7 +123,6 @@ import { Message } from '@arco-design/web-vue'
 import { useWindowSize } from '@vueuse/core'
 import { type FieldConfigResp, type GeneratorConfigResp, getGenConfig, listFieldConfig, listFieldConfigDict, saveGenConfig } from '@/apis/code/generator'
 import type { LabelValueState } from '@/types/global'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { type ColumnItem, GiForm } from '@/components/GiForm'
 import { useResetReactive } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -222,7 +221,7 @@ const getDataList = async (tableName: string, requireSync: boolean) => {
 }
 
 // Table 字段配置
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   { title: '名称', slotName: 'fieldName' },
   { title: '类型', slotName: 'fieldType' },
   { title: '描述', slotName: 'comment', width: 170 },

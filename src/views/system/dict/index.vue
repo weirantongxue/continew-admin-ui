@@ -1,10 +1,5 @@
 <template>
   <div class="gi_page">
-    <!-- <a-row justify="space-between" align="center" class="header page_header">
-      <a-space wrap>
-        <div class="title">字典管理</div>
-      </a-space>
-    </a-row> -->
     <SplitPanel>
       <template #left>
         <DictTree @node-click="handleSelectDict" />
@@ -34,6 +29,10 @@
                 <a-button v-permission="['system:dict:item:add']" type="primary" @click="onAdd">
                   <template #icon><icon-plus /></template>
                   <template #default>新增</template>
+                </a-button>
+                <a-button v-permission="['system:dict:item:clearCache']" type="outline" status="warning" @click="onClearCache">
+                  <template #icon><icon-delete /></template>
+                  <template #default>清除缓存</template>
                 </a-button>
               </template>
               <template #label="{ record }">
@@ -66,10 +65,11 @@
 </template>
 
 <script setup lang="ts">
+import type { TableInstance } from '@arco-design/web-vue'
+import { Message, Modal } from '@arco-design/web-vue'
 import DictTree from './tree/index.vue'
 import DictItemAddModal from './DictItemAddModal.vue'
-import { type DictItemQuery, type DictItemResp, deleteDictItem, listDictItem } from '@/apis/system/dict'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
+import { type DictItemQuery, type DictItemResp, clearDictCache, deleteDictItem, listDictItem } from '@/apis/system/dict'
 import { useTable } from '@/hooks'
 import { isMobile } from '@/utils'
 import has from '@/utils/has'
@@ -88,7 +88,7 @@ const {
   search,
   handleDelete,
 } = useTable((page) => listDictItem({ ...queryForm, ...page }), { immediate: false })
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   {
     title: '序号',
     width: 66,
@@ -137,9 +137,30 @@ const onDelete = (record: DictItemResp) => {
   })
 }
 
+const dictName = ref()
+const dictCode = ref()
+// 清除缓存
+const onClearCache = () => {
+  if (!dictCode.value) {
+    return Message.warning('请先选择字典')
+  }
+  Modal.warning({
+    title: '提示',
+    content: `是否确定清除字典「${dictName.value}(${dictCode.value})」缓存？`,
+    hideCancel: false,
+    maskClosable: false,
+    onOk: async () => {
+      await clearDictCache(dictCode.value)
+      Message.success('清除成功')
+    },
+  })
+}
+
 // 根据选中字典查询
-const handleSelectDict = (keys: Array<any>) => {
-  queryForm.dictId = keys.length === 1 ? keys[0] : undefined
+const handleSelectDict = (dict: { dictId: string, dictName: string, dictCode: string }) => {
+  queryForm.dictId = dict.dictId
+  dictName.value = dict.dictName
+  dictCode.value = dict.dictCode
   search()
 }
 

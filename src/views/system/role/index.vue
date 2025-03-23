@@ -7,10 +7,10 @@
       <template #main>
         <a-tabs v-model:activeKey="activeTab" class="gi_tabs" size="large">
           <a-tab-pane key="1" title="功能权限">
-            <component :is="Pane1" v-if="activeTab === '1'" :role-id="roleId" />
+            <component :is="Permission" v-if="activeTab === '1'" :role-id="roleId" />
           </a-tab-pane>
           <a-tab-pane key="2" title="角色用户">
-            <component :is="Pane2" v-if="activeTab === '2'" :role-id="roleId" />
+            <component :is="RoleUser" v-if="activeTab === '2'" :role-id="roleId" />
           </a-tab-pane>
         </a-tabs>
       </template>
@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import RoleTree from './tree/index.vue'
-import Pane1 from './components/Pane1.vue'
-import Pane2 from './components/Pane2.vue'
+import Permission from './components/Permission.vue'
+import RoleUser from './components/RoleUser.vue'
 
 defineOptions({ name: 'SystemRole' })
 

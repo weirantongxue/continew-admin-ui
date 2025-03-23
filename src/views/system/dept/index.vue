@@ -9,7 +9,6 @@
     <GiTable
       v-show="viewType === 'table'"
       ref="tableRef"
-      title=""
       row-key="id"
       :data="dataList"
       :columns="columns"
@@ -95,9 +94,9 @@
 <script setup lang="ts">
 import 'vue3-tree-org/lib/vue3-tree-org.css'
 import { Vue3TreeOrg } from 'vue3-tree-org'
+import type { TableInstance } from '@arco-design/web-vue'
 import DeptAddModal from './DeptAddModal.vue'
 import { type DeptQuery, type DeptResp, deleteDept, exportDept, listDept } from '@/apis/system/dept'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import type GiTable from '@/components/GiTable/index.vue'
 import { useDownload, useTable } from '@/hooks'
 import { isMobile } from '@/utils'
@@ -158,7 +157,7 @@ const dataList = computed(() => {
   return searchData(name.value)
 })
 
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   { title: '名称', dataIndex: 'name', minWidth: 170, ellipsis: true, tooltip: true },
   { title: '状态', dataIndex: 'status', slotName: 'status', align: 'center' },
   { title: '排序', dataIndex: 'sort', align: 'center', show: false },

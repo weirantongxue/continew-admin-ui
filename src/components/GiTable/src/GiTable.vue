@@ -17,53 +17,32 @@
       <a-space wrap class="gi-table__toolbar-right" :size="[8, 8]">
         <slot name="toolbar-right"></slot>
         <a-tooltip content="刷新">
-          <a-button v-if="showRefreshBtn" @click="refresh">
+          <a-button v-if="showRefreshBtn" @click="handleRefresh">
             <template #icon><icon-refresh /></template>
           </a-button>
         </a-tooltip>
-        <a-dropdown v-if="showSizeBtn" @select="handleSelect">
+        <a-dropdown v-if="showSizeBtn" @select="handleSizeChange">
           <a-tooltip content="尺寸">
             <a-button>
               <template #icon><icon-table-size style="width: 14px; height: 14px" /></template>
             </a-button>
           </a-tooltip>
           <template #content>
-            <a-doption v-for="item in sizeList" :key="item.value" :value="item.value" :active="item.value === size">
+            <a-doption v-for="item in TABLE_SIZE_OPTIONS" :key="item.value" :value="item.value" :active="item.value === size">
               {{ item.label }}
             </a-doption>
           </template>
         </a-dropdown>
-        <a-popover
-          v-if="showSettingColumnBtn" trigger="click" position="br"
-          :content-style="{ minWidth: '120px', padding: '6px 8px 10px' }"
-        >
-          <a-tooltip content="列设置">
-            <a-button>
-              <template #icon>
-                <icon-settings />
-              </template>
-            </a-button>
-          </a-tooltip>
-          <template #content>
-            <div class="gi-table__draggable">
-              <VueDraggable v-model="settingColumnList">
-                <div v-for="item in settingColumnList" :key="item.title" class="drag-item">
-                  <div class="drag-item__move"><icon-drag-dot-vertical /></div>
-                  <a-checkbox v-model:model-value="item.show" :disabled="item.disabled">{{ item.title }}</a-checkbox>
-                </div>
-              </VueDraggable>
-            </div>
-            <a-divider :margin="6" />
-            <a-row justify="center">
-              <a-button type="primary" size="mini" long @click="resetSettingColumns">
-                <template #icon><icon-refresh /></template>
-                <template #default>重置</template>
-              </a-button>
-            </a-row>
-          </template>
-        </a-popover>
+        <ColumnSetting
+          v-if="showSettingColumnBtn"
+          ref="columnSettingRef"
+          v-model:columns="innerColumns"
+          :disabled-keys="disabledColumnKeys"
+          :table-id="tableId"
+          @visible-columns-change="handleVisibleColumnsChange"
+        />
         <a-tooltip content="全屏">
-          <a-button v-if="showFullscreenBtn" @click="isFullscreen = !isFullscreen">
+          <a-button v-if="showFullscreenBtn" @click="toggleFullscreen">
             <template #icon>
               <icon-fullscreen v-if="!isFullscreen" />
               <icon-fullscreen-exit v-else />
@@ -75,20 +54,21 @@
     <a-row class="gi-table__toolbar-bottom">
       <slot name="toolbar-bottom"></slot>
     </a-row>
-    <div class="gi-table__body" :class="`gi-table__body-pagination-${attrs['page-position']}`">
+    <div class="gi-table__body" :class="`gi-table__body-pagination-${tableProps['page-position']}`">
       <div class="gi-table__container">
         <a-table
           ref="tableRef"
+          v-bind="tableProps"
           :stripe="stripe"
           :size="size"
-          column-resizable
           :bordered="{ cell: isBordered }"
-          v-bind="{ ...attrs, columns: _columns }"
+          :columns="visibleColumns"
           :scrollbar="true"
           :data="data"
+          column-resizable
         >
-          <template v-for="key in Object.keys(slots)" :key="key" #[key]="scoped">
-            <slot :key="key" :name="key" v-bind="scoped"></slot>
+          <template v-for="key in Object.keys(slots)" :key="key" #[key]="scope">
+            <slot :key="key" :name="key" v-bind="scope" />
           </template>
         </a-table>
       </div>
@@ -97,21 +77,29 @@
 </template>
 
 <script setup lang="ts" generic="T extends TableData">
+import { computed, ref, watch } from 'vue'
 import type { DropdownInstance, TableColumnData, TableData, TableInstance } from '@arco-design/web-vue'
-import { VueDraggable } from 'vue-draggable-plus'
+import { omit } from 'lodash-es'
+import type { TableProps } from './type'
+import ColumnSetting from './components/ColumnSetting.vue'
 
-defineOptions({ name: 'GiTable', inheritAttrs: false })
+defineOptions({ name: 'GiTable' })
+
+// Props 默认值
 const props = withDefaults(defineProps<Props>(), {
   title: '',
+  disabledColumnKeys: () => [],
+  disabledTools: () => [],
   data: () => [],
-  disabledTools: () => [], // 禁止显示的工具
-  disabledColumnKeys: () => [], // 禁止控制显示隐藏的列
 })
 
+/** Emits 类型定义 */
 const emit = defineEmits<{
   (e: 'refresh'): void
+  (e: 'update:columns', columns: TableColumnData[]): void
 }>()
 
+/** Slots 类型定义 */
 defineSlots<{
   'th': (props: { column: TableColumnData }) => void
   'thead': () => void
@@ -135,98 +123,108 @@ defineSlots<{
   [propsName: string]: (props: { key: string, record: T, column: TableColumnData, rowIndex: number }) => void
 }>()
 
-const attrs = useAttrs()
-const slots = useSlots()
-
-interface Props {
+/** Props 类型定义 */
+interface Props extends TableProps {
+  /** 表格标题 */
   title?: string
-  data: T[]
-  disabledTools?: string[]
+  /** 禁止控制显示隐藏的列 */
   disabledColumnKeys?: string[]
+  /** 禁止显示的工具 */
+  disabledTools?: string[]
+  /** 表格数据 */
+  data: T[]
+  /** 表格标识，用于存储列设置 */
+  tableId?: string
 }
 
-const tableRef = ref<TableInstance | null>(null)
+const slots = useSlots()
+const attrs = useAttrs()
+
+/** 组件状态 */
+const tableRef = useTemplateRef('tableRef')
+const columnSettingRef = ref<InstanceType<typeof ColumnSetting> | null>(null)
 const stripe = ref(false)
-const size = ref<TableInstance['size']>('medium')
+const size = ref<TableInstance['size']>('large')
 const isBordered = ref(false)
 const isFullscreen = ref(false)
 
-interface SizeItem { label: string, value: TableInstance['size'] }
-const sizeList: SizeItem[] = [
-  { label: '紧凑', value: 'small' },
-  { label: '默认', value: 'medium' },
-]
+/** 表格尺寸选项 */
+const TABLE_SIZE_OPTIONS = [
+  { label: '迷你', value: 'mini' },
+  { label: '小型', value: 'small' },
+  { label: '中等', value: 'medium' },
+  { label: '大型', value: 'large' },
+] as const
 
-const handleSelect: DropdownInstance['onSelect'] = (value) => {
-  size.value = value as TableInstance['size']
-}
-
-const refresh = () => {
-  emit('refresh')
-}
-
-const showRefreshBtn = computed(() => !props.disabledTools.includes('refresh'))
-const showSizeBtn = computed(() => !props.disabledTools.includes('size'))
-const showFullscreenBtn = computed(() => !props.disabledTools.includes('fullscreen'))
-const showSettingColumnBtn = computed(
-  () => !props.disabledTools.includes('setting') && attrs?.columns && (attrs?.columns as TableColumnData[])?.length,
-)
-interface SettingColumnItem { title: string, key: string, show: boolean, disabled: boolean }
-const settingColumnList = ref<SettingColumnItem[]>([])
-
-// 重置配置列
-const resetSettingColumns = () => {
-  settingColumnList.value = []
-  if (attrs.columns) {
-    const arr = attrs.columns as TableColumnData[]
-    arr.forEach((item) => {
-      settingColumnList.value.push({
-        key: item.dataIndex || (typeof item.title === 'string' ? item.title : ''),
-        title: typeof item.title === 'string' ? item.title : '',
-        show: item.show ?? true,
-        disabled: props.disabledColumnKeys.includes(
-          item.dataIndex || (typeof item.title === 'string' ? item.title : ''),
-        ),
-      })
-    })
+/** 处理表格尺寸变更 */
+const handleSizeChange: DropdownInstance['onSelect'] = (value) => {
+  if (value) {
+    size.value = value as TableInstance['size']
   }
 }
 
-watch(
-  () => attrs,
-  () => {
-    resetSettingColumns()
-  },
-  { immediate: true },
-)
+/** 处理表格刷新 */
+const handleRefresh = () => {
+  emit('refresh')
+}
 
-// 排序和过滤可显示的列数据
-const _columns = computed(() => {
-  if (!attrs.columns) return []
-  const arr = attrs.columns as TableColumnData[]
-  // 显示的dataIndex
-  const showDataIndexs = settingColumnList.value
-    .filter((i) => i.show)
-    .map((i) => i.key || (typeof i.title === 'string' ? i.title : ''))
-  // 显示的columns数据
-  const filterColumns = arr.filter((i) =>
-    showDataIndexs.includes(i.dataIndex || (typeof i.title === 'string' ? i.title : '')),
-  )
-  const sortedColumns: TableColumnData[] = []
-  settingColumnList.value.forEach((i) => {
-    filterColumns.forEach((j) => {
-      if (i.key === (j.dataIndex || j.title)) {
-        sortedColumns.push(j)
-      }
-    })
-  })
-  return sortedColumns
+/** 切换全屏状态 */
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value
+}
+
+const showRefreshBtn = computed(() => !props.disabledTools?.includes('refresh'))
+const showSizeBtn = computed(() => !props.disabledTools?.includes('size'))
+const showFullscreenBtn = computed(() => !props.disabledTools?.includes('fullscreen'))
+/** 列设置相关逻辑 */
+const showSettingColumnBtn = computed(() => {
+  const columns = props.columns as TableColumnData[] | undefined
+  return !props.disabledTools?.includes('setting') && Boolean(columns?.length)
 })
 
-defineExpose({ tableRef })
+/** 内部维护列数据 */
+const innerColumns = ref<TableColumnData[]>([])
+
+/** 监听 props.columns 变化 */
+watch(() => props.columns, (newColumns) => {
+  if (newColumns && innerColumns.value.length === 0) {
+    innerColumns.value = [...newColumns]
+  }
+}, { immediate: true })
+
+/** 实际显示的列（由ColumnSetting组件计算） */
+const tableColumns = ref<TableColumnData[]>([])
+
+/** 处理列设置组件的可见列变化 */
+const handleVisibleColumnsChange = (columns: TableColumnData[]) => {
+  tableColumns.value = columns
+}
+
+/** 表格属性计算 */
+const tableProps = computed(() => ({
+  ...omit(props, ['title', 'disabledColumnKeys', 'disabledTools']),
+  ...attrs,
+}))
+
+/** 计算显示的列 */
+const visibleColumns = computed(() => {
+  // 如果tableColumns有值，使用tableColumns
+  if (tableColumns.value && tableColumns.value.length > 0) {
+    return tableColumns.value
+  }
+
+  // 否则使用原始的columns
+  return props.columns?.filter((col) => col.show !== false) || []
+})
+
+defineExpose({
+  tableRef,
+  resetColumns: () => columnSettingRef.value?.resetColumns?.(),
+  saveColumns: () => columnSettingRef.value?.saveColumns?.(),
+})
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .gi-table {
   flex: 1;
   display: flex;

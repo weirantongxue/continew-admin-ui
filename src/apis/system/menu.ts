@@ -29,3 +29,8 @@ export function updateMenu(data: any, id: string) {
 export function deleteMenu(id: string) {
   return http.del(`${BASE_URL}/${id}`)
 }
+
+/** @desc 清除菜单缓存 */
+export function clearMenuCache() {
+  return http.del(`${BASE_URL}/cache`)
+}

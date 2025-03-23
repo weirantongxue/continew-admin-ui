@@ -1,3 +1,82 @@
+<template>
+  <div class="search-trigger" @click="visible = true">
+    <icon-search :size="18" style="margin-right: 4px;" />
+    <span class="search-text">
+      搜索
+    </span>
+    <span class="shortcut-key">
+      Ctrl + K
+    </span>
+  </div>
+  <div class="search-modal">
+    <a-modal
+      :visible="visible"
+      :mask-closable="true"
+      :align-center="false"
+      :closable="false"
+      :render-to-body="false"
+      @cancel="visible = false"
+      @keydown="handleKeyDown"
+    >
+      <template #title>
+        <div class="search-input-wrapper">
+          <icon-search :size="24" />
+          <input ref="searchInput" v-model="searchKeyword" placeholder="搜索页面" class="search-input">
+          <div class="esc-tip">
+            ESC 退出
+          </div>
+        </div>
+      </template>
+      <div class="search-content">
+        <div v-if="searchResults.length">
+          <div class="result-count">
+            搜索到 {{ searchResults.length }} 个结果
+          </div>
+          <div class="result-list">
+            <div
+              v-for="(item, index) in searchResults" :key="item.path" class="result-item"
+              :class="{ selected: selectedIndex === index }" @click="handleResultClick(item)"
+            >
+              <icon-file :size="18" style="margin-right: 6px;" />
+              <div class="result-title">
+                {{ item.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="searchHistory.length" class="history-section">
+          <div class="history-header">
+            <div class="history-title">
+              搜索历史
+            </div>
+            <a-button type="text" size="small" class="text-xs" @click="clearHistory">
+              清空历史
+            </a-button>
+          </div>
+          <div class="history-list">
+            <div v-for="item in searchHistory" :key="item.path" class="history-item" @click="handleHistoryClick(item)">
+              <icon-history :size="18" style="margin-right: 6px;" />
+              <div class="result-title">
+                {{ item.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="shortcut">
+          <GiSvgIcon name="select" :size="12" class="shortcut-icon" />
+          <div>切换</div>
+        </div>
+        <div class="shortcut">
+          <GiSvgIcon name="shortcut-enter" :size="12" class="shortcut-icon" />
+          <div>选择</div>
+        </div>
+      </template>
+    </a-modal>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { useEventListener } from '@vueuse/core'
 import { useRouter } from 'vue-router'
@@ -114,85 +193,6 @@ watch(searchKeyword, (newValue) => {
 })
 </script>
 
-<template>
-  <div class="search-trigger" @click="visible = true">
-    <icon-search :size="18" style="margin-right: 4px;" />
-    <span class="search-text">
-      搜索
-    </span>
-    <span class="shortcut-key">
-      Ctrl + K
-    </span>
-  </div>
-  <div class="search-modal">
-    <a-modal
-      :visible="visible"
-      :mask-closable="true"
-      :align-center="false"
-      :closable="false"
-      :render-to-body="false"
-      @cancel="visible = false"
-      @keydown="handleKeyDown"
-    >
-      <template #title>
-        <div class="search-input-wrapper">
-          <icon-search :size="24" />
-          <input ref="searchInput" v-model="searchKeyword" placeholder="搜索页面" class="search-input">
-          <div class="esc-tip">
-            ESC 退出
-          </div>
-        </div>
-      </template>
-      <div class="search-content">
-        <div v-if="searchResults.length">
-          <div class="result-count">
-            搜索到 {{ searchResults.length }} 个结果
-          </div>
-          <div class="result-list">
-            <div
-              v-for="(item, index) in searchResults" :key="item.path" class="result-item"
-              :class="{ selected: selectedIndex === index }" @click="handleResultClick(item)"
-            >
-              <icon-file :size="18" style="margin-right: 6px;" />
-              <div class="result-title">
-                {{ item.title }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div v-if="searchHistory.length" class="history-section">
-          <div class="history-header">
-            <div class="history-title">
-              搜索历史
-            </div>
-            <a-button type="text" size="small" class="text-xs" @click="clearHistory">
-              清空历史
-            </a-button>
-          </div>
-          <div class="history-list">
-            <div v-for="item in searchHistory" :key="item.path" class="history-item" @click="handleHistoryClick(item)">
-              <icon-history :size="18" style="margin-right: 6px;" />
-              <div class="result-title">
-                {{ item.title }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <div class="shortcut">
-          <GiSvgIcon name="select" :size="12" class="shortcut-icon" />
-          <div>切换</div>
-        </div>
-        <div class="shortcut">
-          <GiSvgIcon name="shortcut-enter" :size="12" class="shortcut-icon" />
-          <div>选择</div>
-        </div>
-      </template>
-    </a-modal>
-  </div>
-</template>
-
 <style scoped lang="scss">
 .search-trigger {
   display: flex;
@@ -201,11 +201,7 @@ watch(searchKeyword, (newValue) => {
   margin-right: 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  background-color: #f3f4f6;
-
-  .dark & {
-    background-color: var(--color-bg-2);
-  }
+  background-color: var(--color-bg-4);
 }
 
 .search-text {
@@ -218,12 +214,8 @@ watch(searchKeyword, (newValue) => {
   padding: 2px 6px;
   font-size: 10px;
   border-radius: 4px;
-  background-color: #e5e7eb;
+  background-color: var(--color-bg-3);
   color: var(--color-text-3);
-
-  .dark & {
-    background-color: var(--color-bg-4);
-  }
 }
 
 .search-modal {
@@ -263,12 +255,8 @@ watch(searchKeyword, (newValue) => {
   padding: 0.25rem 0.375rem;
   font-size: 0.75rem;
   border-radius: 0.375rem;
-  background-color: #e5e7eb;
+  background-color: var(--color-fill-2);
   color: var(--color-text-3);
-
-  .dark & {
-    background-color: var(--color-bg-4);
-  }
 }
 
 .result-count {
@@ -292,13 +280,8 @@ watch(searchKeyword, (newValue) => {
   color: var(--color-text-3);
 
   &:hover {
-    color: #000;
-    background-color: #f3f4f6;
-
-    .dark & {
-      color: #fff;
-      background-color: var(--color-bg-4);
-    }
+    background-color: var(--color-bg-4);
+    color: var(--color-text-1);
   }
 }
 
@@ -337,24 +320,13 @@ watch(searchKeyword, (newValue) => {
   color: var(--color-text-3);
 
   &:hover {
-    color: #000;
-    background-color: #f3f4f6;
-
-    .dark & {
-      color: #fff;
-      background-color: var(--color-bg-4);
-    }
+    background-color: var(--color-bg-4);
+    color: var(--color-text-1);
   }
 }
 
 .selected {
-  color: #000;
-  background-color: #f3f4f6;
-
-  .dark & {
-    color: #fff;
-    background-color: var(--color-bg-4);
-  }
+  background-color: var(--color-bg-4);
 }
 
 :deep(.arco-modal-footer){
@@ -372,13 +344,9 @@ watch(searchKeyword, (newValue) => {
 
   &-icon{
     padding: 4px;
-    background-color: #e5e7eb;
+    background-color:var(--color-fill-2);
     border-radius: 6px;
     color: var(--color-text-1);
-
-    .dark & {
-      background-color: var(--color-bg-5);
-    }
   }
 }
 </style>

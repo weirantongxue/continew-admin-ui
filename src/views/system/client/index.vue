@@ -1,7 +1,6 @@
 <template>
   <div class="gi_table_page">
     <GiTable
-      title=""
       row-key="id"
       :data="dataList"
       :columns="columns"
@@ -63,10 +62,10 @@
 
 <script setup lang="tsx">
 import type { LabelValue } from '@arco-design/web-vue/es/tree-select/interface'
+import type { TableInstance } from '@arco-design/web-vue'
 import ClientAddModal from './ClientAddModal.vue'
 import ClientDetailDrawer from './ClientDetailDrawer.vue'
 import { type ClientQuery, type ClientResp, deleteClient, listClient } from '@/apis/system/client'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { DisEnableStatusList } from '@/constant/common'
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -105,7 +104,7 @@ const {
   search,
   handleDelete,
 } = useTable((page) => listClient({ ...queryForm, ...page }), { immediate: true })
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   {
     title: '序号',
     width: 66,
@@ -151,8 +150,8 @@ const columns: TableInstanceColumns[] = [
       return <GiCellTag value={record.clientType} dict={client_type.value} />
     },
   },
-  { title: 'Token 最低活跃频率', dataIndex: 'activeTimeout', slotName: 'activeTimeout', width: 180, align: 'center', render: ({ record }) => `${record.activeTimeout} s` },
-  { title: 'Token 有效期', dataIndex: 'timeout', slotName: 'timeout', align: 'center', render: ({ record }) => `${record.timeout} s` },
+  { title: 'Token 最低活跃频率', dataIndex: 'activeTimeout', slotName: 'activeTimeout', width: 180, align: 'center', render: ({ record }) => `${record.activeTimeout} 秒` },
+  { title: 'Token 有效期', dataIndex: 'timeout', slotName: 'timeout', align: 'center', render: ({ record }) => `${record.timeout} 秒` },
   {
     title: '状态',
     dataIndex: 'status',

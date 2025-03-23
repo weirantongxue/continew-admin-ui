@@ -19,22 +19,20 @@
       </a-button>
     </template>
     <template #toolbar-right>
-      <a-tooltip :content="isCascade ? '取消父子联动' : '父子联动'">
-        <a-button @click="isCascade = !isCascade">
-          <template #icon>
-            <icon-check v-if="!isCascade" />
-            <icon-close v-else />
-          </template>
-        </a-button>
-      </a-tooltip>
-      <a-tooltip :content="isExpanded ? '折叠' : '展开'">
-        <a-button @click="onExpanded">
-          <template #icon>
-            <icon-mind-mapping v-if="!isExpanded" />
-            <icon-list v-else />
-          </template>
-        </a-button>
-      </a-tooltip>
+      <a-radio-group v-model="isCascade" type="button" :disabled="disabled">
+        <a-radio :value="true">节点关联</a-radio>
+        <a-radio :value="false">节点独立</a-radio>
+      </a-radio-group>
+      <a-button @click="onExpanded">
+        <template #icon>
+          <icon-list v-if="isExpanded" />
+          <icon-mind-mapping v-else />
+        </template>
+        <template #default>
+          <span v-if="!isExpanded">展开</span>
+          <span v-else>折叠</span>
+        </template>
+      </a-button>
     </template>
     <template #expand-icon="{ expanded }">
       <IconDown v-if="expanded" />
@@ -60,7 +58,6 @@
 import { nextTick, ref } from 'vue'
 import { Message, type TableInstance } from '@arco-design/web-vue'
 import { type MenuResp, listMenu } from '@/apis/system/menu'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { isMobile } from '@/utils'
 import type GiTable from '@/components/GiTable/index.vue'
 import { useTable } from '@/hooks'
@@ -168,7 +165,7 @@ const {
   },
 })
 
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   { title: '菜单', dataIndex: 'title', slotName: 'title', width: 170, fixed: !isMobile() ? 'left' : undefined },
   { title: '权限', dataIndex: 'permissions', slotName: 'permissions' },
 ]

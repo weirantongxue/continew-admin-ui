@@ -61,11 +61,11 @@
 </template>
 
 <script lang='tsx' setup>
+import type { TableInstance } from '@arco-design/web-vue'
 import { Message, Modal } from '@arco-design/web-vue'
 import RoleAssignModal from '../RoleAssignModal.vue'
 import { useResetReactive, useTable } from '@/hooks'
 import { type RoleUserQuery, type RoleUserResp, listRoleUser, unassignFromUsers } from '@/apis/system/role'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { isMobile } from '@/utils'
 import has from '@/utils/has'
 
@@ -90,7 +90,7 @@ const {
   selectAll,
   handleDelete,
 } = useTable((page) => listRoleUser(props.roleId, { ...queryForm, ...page }), { immediate: false })
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   {
     title: '序号',
     width: 66,

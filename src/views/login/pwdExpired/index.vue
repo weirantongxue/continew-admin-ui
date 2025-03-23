@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <ToggleDark class="theme-btn" />
+    <GiThemeBtn class="theme-btn" />
     <Background />
   </div>
   <div class="login h5">

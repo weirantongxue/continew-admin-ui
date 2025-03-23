@@ -83,6 +83,7 @@ const columns: ColumnItem[] = reactive([
     field: 'authType',
     type: 'select',
     required: true,
+    span: 12,
     props: {
       options: auth_type_enum,
       multiple: true,
@@ -93,6 +94,7 @@ const columns: ColumnItem[] = reactive([
     label: '终端类型',
     field: 'clientType',
     type: 'select',
+    span: 12,
     props: {
       options: client_type,
     },
@@ -106,6 +108,7 @@ const columns: ColumnItem[] = reactive([
     ),
     field: 'activeTimeout',
     type: 'input-number',
+    span: 12,
     slots: {
       append: () => (
         <span style={{ width: '30px', textAlign: 'center' }}>秒</span>
@@ -125,6 +128,7 @@ const columns: ColumnItem[] = reactive([
     ),
     field: 'timeout',
     type: 'input-number',
+    span: 12,
     slots: {
       append: () => (
         <span style={{ width: '30px', textAlign: 'center' }}>秒</span>
@@ -140,6 +144,7 @@ const columns: ColumnItem[] = reactive([
     field: 'status',
     type: 'radio-group',
     required: true,
+    span: 24,
     props: {
       type: 'button',
       options: DisEnableStatusList,

@@ -42,15 +42,19 @@ export interface RouteItem {
 }
 
 /** 认证类型 */
-export enum AuthTypeEnum {
-  ACCOUNT = 'ACCOUNT',
-  PHONE = 'PHONE',
-  EMAIL = 'EMAIL',
-  SOCIAL = 'SOCIAL',
-}
+export type AuthType = 'ACCOUNT' | 'PHONE' | 'EMAIL' | 'SOCIAL'
+
+export const AuthTypeConstants = {
+  ACCOUNT: 'ACCOUNT',
+  PHONE: 'PHONE',
+  EMAIL: 'EMAIL',
+  SOCIAL: 'SOCIAL',
+} as const
+
+/** 基础认证请求接口 */
 export interface AuthReq {
   clientId?: string
-  authType?: string
+  authType?: AuthType
 }
 
 /** 账号登录请求参数 */
@@ -73,12 +77,12 @@ export interface EmailLoginReq extends AuthReq {
   captcha: string
 }
 
-// 登录响应类型
+/** 登录响应类型 */
 export interface LoginResp {
   token: string
 }
 
-// 第三方登录授权类型
+/** 第三方登录授权类型 */
 export interface SocialAuthAuthorizeResp {
   authorizeUrl: string
 }

@@ -63,9 +63,9 @@
 </template>
 
 <script setup lang="ts">
+import type { TableInstance } from '@arco-design/web-vue'
 import { Message, Modal } from '@arco-design/web-vue'
 import { type MessageQuery, deleteMessage, listMessage, readMessage } from '@/apis'
-import type { TableInstanceColumns } from '@/components/GiTable/type'
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
 
@@ -88,7 +88,7 @@ const {
   handleDelete,
 } = useTable((page) => listMessage({ ...queryForm, ...page }), { immediate: true })
 
-const columns: TableInstanceColumns[] = [
+const columns: TableInstance['columns'] = [
   {
     title: '序号',
     width: 66,
