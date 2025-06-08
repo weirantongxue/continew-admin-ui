@@ -245,6 +245,9 @@ const select: TableInstance['onSelect'] = (rowKeys, checked, record) => {
 const selectAll: TableInstance['onSelectAll'] = (checked) => {
   tableData.value.forEach((item) => {
     item.isChecked = checked
+    checked
+        ? selectedKeys.value.add(item.id)
+        : selectedKeys.value.delete(item.id)
     cascadeSelectChild(item, true)
   })
 }
@@ -295,23 +298,28 @@ const save = async () => {
 const showCheckedAll = ref(true)
 // 加载角色详情
 const fetchRole = async (id: string) => {
-  disabled.value = !has.hasPermOr(['system:role:updatePermission'])
-  // 查询角色详情
-  const { data } = await getRole(id)
-  if (!disabled.value) {
-    disabled.value = data.isSystem
+  try {
+    loading.value = true
+    disabled.value = !has.hasPermOr(['system:role:updatePermission'])
+    // 查询角色详情
+    const { data } = await getRole(id)
+    if (!disabled.value) {
+      disabled.value = data.isSystem && data.code === 'admin'
+    }
+    isCascade.value = data.menuCheckStrictly
+    // 更新选中键集合
+    selectedKeys.value = new Set(data.menuIds)
+    // 更新表格数据的选中状态
+    updateTableDataCheckedStatus(tableData.value, data.menuIds)
+    // 手动设置表格行的选中状态，确保组件响应
+    await nextTick(() => {
+      tableRef.value?.tableRef?.selectAll(false)
+      tableRef.value?.tableRef?.select(data.menuIds, true)
+      showCheckedAll.value = !disabled.value
+    })
+  } finally {
+    loading.value = false
   }
-  isCascade.value = data.menuCheckStrictly
-  // 更新选中键集合
-  selectedKeys.value = new Set(data.menuIds)
-  // 更新表格数据的选中状态
-  updateTableDataCheckedStatus(tableData.value, data.menuIds)
-  // 手动设置表格行的选中状态，确保组件响应
-  await nextTick(() => {
-    tableRef.value?.tableRef?.selectAll(false)
-    tableRef.value?.tableRef?.select(data.menuIds, true)
-    showCheckedAll.value = !disabled.value
-  })
 }
 
 // 刷新

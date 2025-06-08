@@ -1,5 +1,5 @@
 <template>
-  <div class="gi_table_page">
+  <GiPageLayout>
     <GiTable
       ref="tableRef"
       row-key="id"
@@ -25,7 +25,7 @@
         </a-button>
       </template>
       <template #toolbar-right>
-        <a-button v-permission="['system:menu:add']" type="primary" @click="onAdd()">
+        <a-button v-permission="['system:menu:create']" type="primary" @click="onAdd()">
           <template #icon><icon-plus /></template>
           <template #default>新增</template>
         </a-button>
@@ -73,7 +73,7 @@
           <a-link v-permission="['system:menu:update']" title="修改" @click="onUpdate(record)">修改</a-link>
           <a-link v-permission="['system:menu:delete']" status="danger" title="删除" @click="onDelete(record)">删除</a-link>
           <a-link
-            v-permission="['system:menu:add']"
+            v-permission="['system:menu:create']"
             :disabled="![1, 2].includes(record.type)"
             :title="![1, 2].includes(record.type) ? '不可添加下级菜单' : '新增'"
             @click="onAdd(record.id)"
@@ -85,7 +85,7 @@
     </GiTable>
 
     <MenuAddModal ref="MenuAddModalRef" :menus="dataList" @save-success="search" />
-  </div>
+  </GiPageLayout>
 </template>
 
 <script setup lang="ts">
@@ -160,7 +160,7 @@ const columns: TableInstance['columns'] = [
     width: 160,
     align: 'center',
     fixed: !isMobile() ? 'right' : undefined,
-    show: has.hasPermOr(['system:menu:update', 'system:menu:delete', 'system:menu:add']),
+    show: has.hasPermOr(['system:menu:update', 'system:menu:delete', 'system:menu:create']),
   },
 ]
 

@@ -1,4 +1,4 @@
-@use './var.scss' as *;
+@import './var.scss';
 
 body {
   --margin: 14px; // 通用外边距

@@ -6,7 +6,7 @@
     :body-style="{ padding: '15px 20px 13px 20px' }"
   >
     <template #extra>
-      <a-link @click="router.replace({ path: '/system/notice' })">更多</a-link>
+      <a-link @click="open">更多</a-link>
     </template>
     <a-skeleton v-if="loading" :loading="loading" :animation="true">
       <a-skeleton-line :rows="5" />
@@ -15,7 +15,7 @@
       <a-empty v-if="dataList.length === 0">暂无公告</a-empty>
       <div v-else>
         <div v-for="(item, idx) in dataList" :key="idx" class="item">
-          <GiCellTag :value="item.type" :dict="notice_type" />
+          <a-tag v-if="item.isTop" color="red">置顶</a-tag>
           <a-link class="item-content" @click="onDetail(item.id)">
             <a-typography-paragraph
               :ellipsis="{
@@ -31,17 +31,10 @@
       </div>
     </div>
   </a-card>
-
-  <NoticeDetailModal ref="NoticeDetailModalRef" />
 </template>
 
 <script setup lang="ts">
 import { type DashboardNoticeResp, listDashboardNotice } from '@/apis'
-import { useDict } from '@/hooks/app'
-import NoticeDetailModal from '@/views/system/notice/NoticeDetailModal.vue'
-
-const router = useRouter()
-const { notice_type } = useDict('notice_type')
 
 const dataList = ref<DashboardNoticeResp[]>([])
 const loading = ref(false)
@@ -56,10 +49,15 @@ const getDataList = async () => {
   }
 }
 
-const NoticeDetailModalRef = ref<InstanceType<typeof NoticeDetailModal>>()
+const router = useRouter()
 // 详情
-const onDetail = (id: string) => {
-  NoticeDetailModalRef.value?.onDetail(id)
+const onDetail = (id: number) => {
+  router.push({ path: '/user/notice', query: { id } })
+}
+
+// 打开消息中心
+const open = () => {
+  router.push({ path: '/user/message', query: { tab: 'notice' } })
 }
 
 onMounted(() => {

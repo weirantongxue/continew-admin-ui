@@ -3,13 +3,13 @@
     <a-list :loading="loading">
       <template #header>通知</template>
       <a-list-item v-for="item in messageList" :key="item.id">
-        <div class="content-wrapper" @click="open">
+        <div class="content-wrapper" @click="open(item.path)">
           <div class="content">{{ item.title }}</div>
           <div class="date">{{ item.createTime }}</div>
         </div>
       </a-list-item>
       <template #footer>
-        <a class="more-btn" @click="open">查看更多
+        <a class="more-btn" @click="open()">查看更多
           <icon-right />
         </a>
         <a class="read-all-btn" @click="readAll">全部已读</a>
@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { type MessageResp, listMessage, readMessage } from '@/apis'
+import { type MessageResp, listMessage, readAllMessage } from '@/apis'
+import router from '@/router'
 
 const emit = defineEmits<{
   (e: 'readall-success'): void
@@ -47,13 +48,17 @@ const getMessageData = async () => {
 }
 
 // 打开消息中心
-const open = () => {
-  window.open('/setting/message')
+const open = (path?: string) => {
+  if (path) {
+    router.push(path)
+    return
+  }
+  router.push({ path: '/user/message', query: { tab: 'msg' } })
 }
 
 // 全部已读
 const readAll = async () => {
-  await readMessage()
+  await readAllMessage()
   await getMessageData()
   emit('readall-success')
 }

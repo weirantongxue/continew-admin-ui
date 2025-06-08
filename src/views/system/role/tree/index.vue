@@ -4,7 +4,7 @@
       <a-input v-model="searchKey" placeholder="搜索名称/编码" allow-clear>
         <template #prefix><icon-search /></template>
       </a-input>
-      <a-button v-permission="['system:role:add']" type="primary" @click="onAdd">
+      <a-button v-permission="['system:role:create']" type="primary" @click="onAdd">
         <template #icon><icon-plus /></template>
       </a-button>
     </div>

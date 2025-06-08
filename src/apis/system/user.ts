@@ -1,8 +1,6 @@
 import type * as T from './type'
 import http from '@/utils/http'
 
-export type * from './type'
-
 const BASE_URL = '/system/user'
 
 /** @desc 查询用户列表 */
@@ -31,8 +29,8 @@ export function updateUser(data: any, id: string) {
 }
 
 /** @desc 删除用户 */
-export function deleteUser(ids: string | Array<string>) {
-  return http.del(`${BASE_URL}/${ids}`)
+export function deleteUser(id: string) {
+  return http.del(`${BASE_URL}`, { ids: [id] })
 }
 
 /** @desc 导出用户 */

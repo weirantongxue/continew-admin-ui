@@ -1,5 +1,5 @@
 <template>
-  <div class="gi_table_page">
+  <GiPageLayout>
     <GiTable
       row-key="id"
       :data="dataList"
@@ -27,12 +27,12 @@
         </a-button>
       </template>
       <template #toolbar-right>
-        <a-button v-permission="['schedule:job:add']" type="primary" @click="onAdd">
+        <a-button v-permission="['schedule:job:create']" type="primary" @click="onAdd">
           <template #icon><icon-plus /></template>
           <template #default>新增</template>
         </a-button>
       </template>
-      <template v-if="has.hasPermOr(['schedule:job:detail'])" #jobName="{ record }">
+      <template v-if="has.hasPermOr(['schedule:job:get'])" #jobName="{ record }">
         <a-link @click="onDetail(record)">{{ record.jobName }}</a-link>
       </template>
       <template #triggerType="{ record }">
@@ -74,7 +74,7 @@
 
     <JobAddModal ref="JobAddModalRef" @save-success="reset" />
     <JobDetailDrawer ref="JobDetailDrawerRef" />
-  </div>
+  </GiPageLayout>
 </template>
 
 <script setup lang="ts">

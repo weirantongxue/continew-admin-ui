@@ -12,7 +12,7 @@ export function listNotice(query: T.NoticePageQuery) {
 
 /** @desc 查询公告详情 */
 export function getNotice(id: string) {
-  return http.get<T.NoticeResp>(`${BASE_URL}/${id}`)
+  return http.get<T.NoticeDetailResp>(`${BASE_URL}/${id}`)
 }
 
 /** @desc 新增公告 */
@@ -26,6 +26,6 @@ export function updateNotice(data: any, id: string) {
 }
 
 /** @desc 删除公告 */
-export function deleteNotice(ids: string | Array<number>) {
-  return http.del(`${BASE_URL}/${ids}`)
+export function deleteNotice(id: string) {
+  return http.del(`${BASE_URL}`, { ids: [id] })
 }

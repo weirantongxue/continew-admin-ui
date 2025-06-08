@@ -66,6 +66,7 @@
           :scrollbar="true"
           :data="data"
           column-resizable
+          @change="handleTableChange"
         >
           <template v-for="key in Object.keys(slots)" :key="key" #[key]="scope">
             <slot :key="key" :name="key" v-bind="scope" />
@@ -97,6 +98,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'refresh'): void
   (e: 'update:columns', columns: TableColumnData[]): void
+  (e: 'change', ...args: any[]): void
 }>()
 
 /** Slots 类型定义 */
@@ -216,6 +218,12 @@ const visibleColumns = computed(() => {
   // 否则使用原始的columns
   return props.columns?.filter((col) => col.show !== false) || []
 })
+
+// 处理表格变化的函数
+const handleTableChange = (...args: any[]) => {
+  // 将接收到的参数传递给父组件
+  emit('change', ...args)
+}
 
 defineExpose({
   tableRef,

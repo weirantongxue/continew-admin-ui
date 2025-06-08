@@ -1,7 +1,7 @@
 {
   "name": "continew-admin-ui",
   "type": "module",
-  "version": "3.6.0-SNAPSHOT",
+  "version": "3.7.0-SNAPSHOT",
   "private": "true",
   "scripts": {
     "bootstrap": "pnpm install --registry=https://registry.npmmirror.com",
@@ -85,6 +85,18 @@
     "vite-plugin-style-import": "^2.0.0",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue-tsc": "2.0.19"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@vue-office/docx",
+      "@vue-office/excel",
+      "@vue-office/pdf",
+      "core-js",
+      "es5-ext",
+      "esbuild",
+      "vue-demi",
+      "vue-echarts"
+    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
