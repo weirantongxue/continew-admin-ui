@@ -1,5 +1,5 @@
 <template>
-  <a-drawer v-model:visible="visible" title="日志详情" :width="720" :footer="false">
+  <a-drawer v-model:visible="visible" title="日志详情" :width="width >= 720 ? 720 : '100%'" :footer="false">
     <a-descriptions title="基本信息" :column="2" size="large" class="general-description">
       <a-descriptions-item label="日志 ID">{{ dataDetail?.id }}</a-descriptions-item>
       <a-descriptions-item label="Trace ID"><a-typography-paragraph :copyable="!!dataDetail?.traceId">{{ dataDetail?.traceId }}</a-typography-paragraph></a-descriptions-item>
@@ -68,7 +68,10 @@
 </template>
 
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core/index'
 import { type LogDetailResp, getLog as getDetail } from '@/apis/monitor'
+
+const { width } = useWindowSize()
 
 const dataId = ref('')
 const dataDetail = ref<LogDetailResp>()
@@ -97,6 +100,5 @@ defineExpose({ onOpen })
 
 :deep(.arco-tabs-content) {
   padding-top: 5px;
-  padding-left: 15px;
 }
 </style>

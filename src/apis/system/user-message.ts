@@ -15,6 +15,11 @@ export function listMessage(query: T.MessagePageQuery) {
   return http.get<PageRes<T.MessageResp[]>>(`${BASE_URL}`, query)
 }
 
+/** @desc 获取用户消息详情 */
+export function getUserMessage(id: number) {
+  return http.get<T.MessageResp>(`${BASE_URL}/${id}`)
+}
+
 /** @desc 删除消息 */
 export function deleteMessage(ids: Array<string>) {
   return http.del(`${BASE_URL}`, { ids })

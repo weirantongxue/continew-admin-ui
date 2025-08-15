@@ -3,7 +3,7 @@ import http from '@/utils/http'
 
 export type * from './type'
 
-const BASE_URL = '/system/smsLog'
+const BASE_URL = '/system/sms/log'
 
 /** @desc 查询短信日志列表 */
 export function listSmsLog(query: T.SmsLogPageQuery) {

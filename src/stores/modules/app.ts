@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
 import { generate, getRgbStr } from '@arco-design/color'
-import { type BasicConfig, listSiteOptionDict } from '@/apis'
+import { type BasicConfig, listSiteOptionDict } from '@/apis/system'
 import { getSettings } from '@/config/setting'
 
 const storeSetup = () => {

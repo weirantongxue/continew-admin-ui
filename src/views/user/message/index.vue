@@ -18,9 +18,7 @@
         </a-tab-pane>
       </a-tabs>
     </template>
-    <transition name="fade-slide" mode="out-in" appear>
-      <component :is="menuList.find((item) => item.key === activeKey)?.value"></component>
-    </transition>
+    <component :is="menuList.find((item) => item.key === activeKey)?.value"></component>
   </GiPageLayout>
 </template>
 
@@ -58,8 +56,8 @@ const unreadMessageCount = ref(0)
 const unreadNoticeCount = ref(0)
 
 const tabItems = computed(() => [
-  { key: 'msg', title: '我的消息', count: unreadMessageCount },
-  { key: 'notice', title: '我的公告', count: unreadNoticeCount },
+  { key: 'msg', title: '我的消息', count: unreadMessageCount.value },
+  { key: 'notice', title: '我的公告', count: unreadNoticeCount.value },
 ])
 
 const getMessageData = async () => {
@@ -77,6 +75,7 @@ onMounted(() => {
   getNoticeData()
   mittBus.on('count-refresh', () => {
     getMessageData()
+    getNoticeData()
   })
 })
 

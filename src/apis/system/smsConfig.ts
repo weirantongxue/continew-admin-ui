@@ -3,7 +3,7 @@ import http from '@/utils/http'
 
 export type * from './type'
 
-const BASE_URL = '/system/smsConfig'
+const BASE_URL = '/system/sms/config'
 
 /** @desc 查询短信配置列表 */
 export function listSmsConfig(query: T.SmsConfigPageQuery) {

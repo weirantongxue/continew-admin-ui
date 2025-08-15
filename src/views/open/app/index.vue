@@ -105,7 +105,7 @@ import has from '@/utils/has'
 defineOptions({ name: 'OpenApp' })
 
 const queryForm = reactive<AppQuery>({
-  sort: ['id,desc'],
+  sort: ['createTime,desc'],
 })
 
 const {

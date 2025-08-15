@@ -44,16 +44,6 @@ const [form, resetForm] = useResetReactive({
 
 const columns: ColumnItem[] = reactive([
   {
-    label: '用户名',
-    field: 'username',
-    type: 'input',
-    span: 24,
-    required: true,
-    props: {
-      maxLength: 64,
-    },
-  },
-  {
     label: '昵称',
     field: 'nickname',
     type: 'input',
@@ -61,6 +51,16 @@ const columns: ColumnItem[] = reactive([
     required: true,
     props: {
       maxLength: 30,
+    },
+  },
+  {
+    label: '用户名',
+    field: 'username',
+    type: 'input',
+    span: 24,
+    required: true,
+    props: {
+      maxLength: 64,
     },
   },
   {

@@ -47,7 +47,7 @@
           </a-descriptions-item>
           <a-descriptions-item :span="4">
             <template #label> <icon-user-group /><span style="margin-left: 5px">角色</span></template>
-            {{ userInfo.roles.join('，') }}
+            {{ userInfo.roleNames.join(' · ') }}
           </a-descriptions-item>
         </a-descriptions>
       </footer>

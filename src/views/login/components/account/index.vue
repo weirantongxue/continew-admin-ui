@@ -8,6 +8,9 @@
     size="large"
     @submit="handleLogin"
   >
+    <a-form-item v-if="tenantStore.needInputTenantCode" field="tenantCode" hide-label>
+      <a-input v-model="tenantCode" placeholder="请输入租户编码（不输入时为默认租户）" allow-clear />
+    </a-form-item>
     <a-form-item field="username" hide-label>
       <a-input v-model="form.username" placeholder="请输入用户名" allow-clear />
     </a-form-item>
@@ -41,7 +44,7 @@
 import { type FormInstance, Message } from '@arco-design/web-vue'
 import { useStorage } from '@vueuse/core'
 import { getImageCaptcha } from '@/apis/common'
-import { useTabsStore, useUserStore } from '@/stores'
+import { useTabsStore, useTenantStore, useUserStore } from '@/stores'
 import { encryptByRsa } from '@/utils/encrypt'
 
 const loginConfig = useStorage('login-config', {
@@ -55,7 +58,7 @@ const loginConfig = useStorage('login-config', {
 const isCaptchaEnabled = ref(true)
 // 验证码图片
 const captchaImgBase64 = ref()
-
+const tenantCode = ref()
 const formRef = ref<FormInstance>()
 const form = reactive({
   username: loginConfig.value.username,
@@ -64,6 +67,7 @@ const form = reactive({
   uuid: '',
   expired: false,
 })
+// 校验规则部分
 const rules: FormInstance['rules'] = {
   username: [{ required: true, message: '请输入用户名' }],
   password: [{ required: true, message: '请输入密码' }],
@@ -104,6 +108,7 @@ const getCaptcha = () => {
   })
 }
 
+const tenantStore = useTenantStore()
 const userStore = useUserStore()
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -114,22 +119,30 @@ const handleLogin = async () => {
     const isInvalid = await formRef.value?.validate()
     if (isInvalid) return
     loading.value = true
+
     await userStore.accountLogin({
       username: form.username,
       password: encryptByRsa(form.password) || '',
       captcha: form.captcha,
       uuid: form.uuid,
-    })
+    }, tenantCode.value)
     tabsStore.reset()
     const { redirect, ...othersQuery } = router.currentRoute.value.query
     const { rememberMe } = loginConfig.value
     loginConfig.value.username = rememberMe ? form.username : ''
-    await router.push({
-      path: (redirect as string) || '/',
-      query: {
-        ...othersQuery,
-      },
-    })
+
+    // 如果有重定向参数，解码并直接跳转到完整路径
+    if (redirect) {
+      const redirectPath = decodeURIComponent(redirect as string)
+      await router.push(redirectPath)
+    } else {
+      await router.push({
+        path: '/',
+        query: {
+          ...othersQuery,
+        },
+      })
+    }
     Message.success('欢迎使用')
   } catch (error) {
     console.error(error)

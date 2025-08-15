@@ -70,7 +70,7 @@
             </a-button>
             <template #content>
               <a-doption v-permission="['system:user:resetPwd']" title="重置密码" @click="onResetPwd(record)">重置密码</a-doption>
-              <a-doption v-permission="['system:user:updateRole']" title="分配角色" @click="onUpdateRole(record)">分配角色</a-doption>
+              <a-doption v-permission="['system:user:updateRole']" :disabled="record.isSystem" title="分配角色" @click="onUpdateRole(record)">分配角色</a-doption>
             </template>
           </a-dropdown>
         </a-space>

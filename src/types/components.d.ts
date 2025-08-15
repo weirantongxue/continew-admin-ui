@@ -52,6 +52,7 @@ declare module 'vue' {
     JsonPretty: typeof import('./../components/JsonPretty/index.vue')['default']
     MinuteForm: typeof import('./../components/GenCron/CronForm/component/minute-form.vue')['default']
     MonthForm: typeof import('./../components/GenCron/CronForm/component/month-form.vue')['default']
+    MultipartUpload: typeof import('./../components/MultipartUpload/index.vue')['default']
     ParentView: typeof import('./../components/ParentView/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

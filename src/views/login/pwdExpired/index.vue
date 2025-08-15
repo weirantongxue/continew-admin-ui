@@ -178,7 +178,12 @@ const logo = computed(() => appStore.getLogo())
         position: fixed;
         top: 20px;
         right: 30px;
-        z-index: 9999;
+        z-index: 999;
+    }
+
+    // 新增弹窗层级设置
+    .arco-modal-wrapper {
+      z-index: 1000;
     }
 
     .footer {
@@ -242,7 +247,6 @@ const logo = computed(() => appStore.getLogo())
         &-box {
             width: 86%;
             max-width: 850px;
-            height: 490px;
             display: flex;
             z-index: 999;
             box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.08);
@@ -385,7 +389,12 @@ const logo = computed(() => appStore.getLogo())
         position: fixed;
         top: 20px;
         right: 30px;
-        z-index: 9999;
+        z-index: 999;
+    }
+
+    // 新增弹窗层级设置
+    .arco-modal-wrapper {
+      z-index: 1000;
     }
 
     .footer {

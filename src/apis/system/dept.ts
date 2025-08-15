@@ -1,3 +1,4 @@
+import type { TreeNodeData } from '@arco-design/web-vue'
 import type * as T from './type'
 import http from '@/utils/http'
 
@@ -33,4 +34,9 @@ export function deleteDept(id: string) {
 /** @desc 导出部门 */
 export function exportDept(query: T.DeptQuery) {
   return http.download(`${BASE_URL}/export`, query)
+}
+
+/** @desc 查询部门字典树 */
+export function listDeptDictTree(query: { description: string | unknown }) {
+  return http.get<TreeNodeData[]>(`${BASE_URL}/dict/tree`, query)
 }

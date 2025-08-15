@@ -52,8 +52,8 @@ const content = computed(() => dataDetail.value?.content)
 
 // 回退
 const onBack = () => {
-  router.back()
   tabsStore.closeCurrent(route.path)
+  router.push('/system/notice')
 }
 
 // 打开

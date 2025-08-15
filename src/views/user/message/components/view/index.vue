@@ -59,8 +59,8 @@ const [form, resetForm] = useResetReactive({
 
 // 回退
 const onBack = () => {
-  router.back()
   tabsStore.closeCurrent(route.path)
+  router.push({ path: '/user/message', query: { tab: 'notice' } })
 }
 
 // 打开

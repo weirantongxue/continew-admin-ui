@@ -75,7 +75,9 @@ const columns: ColumnItem[] = reactive([
     },
     rules: [{ required: true, message: '请选择上级部门' }],
     hide: (form) => {
-      return form.parentId === 0
+      const tree = deptSelectTree.value || []
+      const hasParentNode = Boolean(tree.find((node) => node?.key === form.parentId))
+      return form.parentId === 0 || (!hasParentNode && isUpdate.value)
     },
   },
   {

@@ -1,5 +1,5 @@
 import { ref, toRefs } from 'vue'
-import { listCommonDict } from '@/apis'
+import { listCommonDict } from '@/apis/system'
 import { useDictStore } from '@/stores'
 
 const pendingRequests = new Map<string, Promise<any>>()

@@ -67,8 +67,8 @@ const columns: ColumnItem[] = reactive([
   {
     label: () => (
       <a-tooltip content="-1 代表不限制，永不冻结">
-        Token 最低活跃频率
-        <icon-info-circle-fill />
+        Token 最低活跃频率&nbsp;
+        <icon-question-circle />
       </a-tooltip>
     ),
     field: 'activeTimeout',
@@ -87,8 +87,8 @@ const columns: ColumnItem[] = reactive([
   {
     label: () => (
       <a-tooltip content="-1 代表永不过期">
-        Token 有效期
-        <icon-info-circle-fill />
+        Token 有效期&nbsp;
+        <icon-question-circle />
       </a-tooltip>
     ),
     field: 'timeout',

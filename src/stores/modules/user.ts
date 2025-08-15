@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
+import { useTenantStore } from './tenant'
 import { resetRouter } from '@/router'
 import {
   type AccountLoginReq,
@@ -18,6 +19,7 @@ import { clearToken, getToken, setToken } from '@/utils/auth'
 import { resetHasRouteFlag } from '@/router/guard'
 
 const storeSetup = () => {
+  const tenantStore = useTenantStore()
   const userInfo = reactive<UserInfo>({
     id: '',
     username: '',
@@ -41,7 +43,6 @@ const storeSetup = () => {
   const pwdExpiredShow = ref<boolean>(true)
   const roles = ref<string[]>([]) // 当前用户角色
   const permissions = ref<string[]>([]) // 当前角色权限标识集合
-
   // 重置token
   const resetToken = () => {
     token.value = ''
@@ -50,30 +51,34 @@ const storeSetup = () => {
   }
 
   // 登录
-  const accountLogin = async (req: AccountLoginReq) => {
-    const res = await accountLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.ACCOUNT })
+  const accountLogin = async (req: AccountLoginReq, tenantCode?: string) => {
+    const res = await accountLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.ACCOUNT }, tenantCode)
     setToken(res.data.token)
+    tenantStore.setTenantId(res.data.tenantId)
     token.value = res.data.token
   }
 
   // 邮箱登录
-  const emailLogin = async (req: EmailLoginReq) => {
-    const res = await emailLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.EMAIL })
+  const emailLogin = async (req: EmailLoginReq, tenantCode?: string) => {
+    const res = await emailLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.EMAIL }, tenantCode)
     setToken(res.data.token)
+    tenantStore.setTenantId(res.data.tenantId)
     token.value = res.data.token
   }
 
   // 手机号登录
-  const phoneLogin = async (req: PhoneLoginReq) => {
-    const res = await phoneLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.PHONE })
+  const phoneLogin = async (req: PhoneLoginReq, tenantCode?: string) => {
+    const res = await phoneLoginApi({ ...req, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.PHONE }, tenantCode)
     setToken(res.data.token)
+    tenantStore.setTenantId(res.data.tenantId)
     token.value = res.data.token
   }
 
   // 三方账号登录
   const socialLogin = async (source: string, req: any) => {
-    const res = await socialLoginApi({ ...req, source, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.SOCIAL })
+    const res: any = await socialLoginApi({ ...req, source, clientId: import.meta.env.VITE_CLIENT_ID, authType: AuthTypeConstants.SOCIAL })
     setToken(res.data.token)
+    tenantStore.setTenantId(res.data.tenantId)
     token.value = res.data.token
   }
 
@@ -84,6 +89,7 @@ const storeSetup = () => {
     pwdExpiredShow.value = true
     resetToken()
     resetRouter()
+    tenantStore.resetTenantId()
   }
 
   // 退出登录

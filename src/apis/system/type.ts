@@ -63,6 +63,15 @@ export type RoleDetailResp = RoleResp & {
   menuCheckStrictly: boolean
   deptCheckStrictly: boolean
 }
+export interface RolePermissionResp {
+  id: string
+  title: string
+  parentId: string
+  permission?: string
+  children?: RolePermissionResp[]
+  permissions?: RolePermissionResp[]
+  isChecked?: boolean
+}
 export interface RoleUserResp {
   id: string
   username: string
@@ -457,4 +466,57 @@ export interface MessageQuery {
 }
 
 export interface MessagePageQuery extends MessageQuery, PageQuery {
+}
+
+/** 分片上传 - 初始化参数 */
+export interface MultiPartUploadInitReq {
+  fileName: string
+  fileSize: number
+  fileMd5: string
+  parentPath: string
+  metaData: Record<string, string>
+}
+
+/** 分片上传 - 初始化响应 */
+export interface MultiPartUploadInitResp {
+  uploadId: string
+  partSize: number
+  path: string
+  uploadedPartNumbers: number[]
+}
+
+/** 分片上传 - 上传分片参数 */
+export interface UploadPartReq {
+  uploadId: string
+  partNumber: number
+  file: Blob
+  path: string
+}
+
+/** 分片上传 - 上传分片响应 */
+export interface UploadPartResp {
+  /** 分片编号 */
+  partNumber: number
+  /** 分片ETag */
+  partETag: string
+  /** 分片大小 */
+  partSize: number
+  /** 是否成功 */
+  success: boolean
+  /** 错误信息 */
+  errorMessage?: string
+}
+
+/** 分片上传 - 完成上传参数 */
+export interface CompleteMultipartUploadReq {
+  uploadId: string
+  partETags: Array<{
+    partNumber: number
+    eTag: string
+  }>
+}
+
+/** 分片上传 - 取消上传参数 */
+export interface CancelUploadParams {
+  uploadId: string
 }

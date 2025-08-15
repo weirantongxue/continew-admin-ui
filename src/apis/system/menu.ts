@@ -1,3 +1,4 @@
+import type { TreeNodeData } from '@arco-design/web-vue'
 import type * as T from './type'
 import http from '@/utils/http'
 
@@ -33,4 +34,9 @@ export function deleteMenu(id: string) {
 /** @desc 清除菜单缓存 */
 export function clearMenuCache() {
   return http.del(`${BASE_URL}/cache`)
+}
+
+/** @desc 查询菜单字典树 */
+export function listMenuDictTree(query: { description: string }) {
+  return http.get<TreeNodeData[]>(`${BASE_URL}/dict/tree`, query)
 }

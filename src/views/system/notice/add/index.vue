@@ -75,7 +75,7 @@ import { Message } from '@arco-design/web-vue'
 import { useWindowSize } from '@vueuse/core'
 import AiEditor from './components/index.vue'
 import { addNotice, getNotice, updateNotice } from '@/apis/system/notice'
-import { listUserDict } from '@/apis'
+import { listUserDict } from '@/apis/system'
 import { type ColumnItem, GiForm } from '@/components/GiForm'
 import type { LabelValueState } from '@/types/global'
 import { useTabsStore } from '@/stores'
@@ -207,8 +207,8 @@ const onUpdate = async (id: string) => {
 
 // 返回
 const onBack = () => {
-  router.back()
   tabsStore.closeCurrent(route.path)
+  router.push('/system/notice')
 }
 
 // 保存

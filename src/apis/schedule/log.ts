@@ -24,13 +24,3 @@ export function stopJob(id: number) {
 export function retryJob(id: number) {
   return http.post(`${BASE_URL}/retry/${id}`)
 }
-
-/** @desc 查询任务实例列表 */
-export function listJobInstance(query: T.JobInstanceQuery) {
-  return http.get<T.JobInstanceResp[]>(`${BASE_URL}/instance`, query)
-}
-
-/** @desc 查询任务实例日志列表 */
-export function listJobInstanceLog(query: T.JobInstanceLogQuery) {
-  return http.get<T.JobInstanceLogResp>(`${BASE_URL}/instance/log`, query)
-}

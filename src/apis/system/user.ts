@@ -1,5 +1,6 @@
 import type * as T from './type'
 import http from '@/utils/http'
+import type { LabelValueState } from '@/types/global'
 
 const BASE_URL = '/system/user'
 
@@ -61,4 +62,9 @@ export function resetUserPwd(data: any, id: string) {
 /** @desc 分配角色 */
 export function updateUserRole(data: { roleIds: string[] }, id: string) {
   return http.patch(`${BASE_URL}/${id}/role`, data)
+}
+
+/** @desc 查询用户字典 */
+export function listUserDict(query?: { status: number }) {
+  return http.get<LabelValueState[]>(`${BASE_URL}/dict`, query)
 }

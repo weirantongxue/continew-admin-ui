@@ -81,8 +81,9 @@ export const systemRoutes: RouteRecordRaw[] = [
         meta: { title: '接口文档', icon: 'swagger', hidden: false, keepAlive: true },
       },
       {
-        path: 'https://continew.top',
-        meta: { title: '在线文档', icon: 'continew', hidden: false },
+        path: '/about/document/changelog',
+        component: () => import('@/views/about/document/changelog/index.vue'),
+        meta: { title: '更新日志', icon: 'continew', hidden: false, keepAlive: true },
       },
       {
         path: 'https://arco.design/vue/component/button',

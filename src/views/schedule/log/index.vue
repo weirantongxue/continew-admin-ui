@@ -41,7 +41,6 @@
       </template>
       <template #action="{ record }">
         <a-space>
-          <a-link v-permission="['schedule:log:get']" title="详情" @click="onDetail(record)">详情</a-link>
           <a-popconfirm content="是否确定停止本次执行?" type="warning" @ok="onStop(record)">
             <a-link v-if="record.taskBatchStatus === 2" v-permission="['schedule:log:stop']" status="danger" title="停止">停止</a-link>
           </a-popconfirm>
@@ -58,8 +57,6 @@
         </a-space>
       </template>
     </GiTable>
-
-    <LogDetailDrawer ref="LogDetailDrawerRef" />
   </GiPageLayout>
 </template>
 
@@ -68,7 +65,6 @@ import type { TableInstance } from '@arco-design/web-vue'
 import { Message } from '@arco-design/web-vue'
 import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
-import LogDetailDrawer from './LogDetailDrawer.vue'
 import { type JobLogQuery, type JobLogResp, listGroup, listJobLog, retryJob, stopJob } from '@/apis/schedule'
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -111,7 +107,7 @@ const columns: TableInstance['columns'] = [
     width: 130,
     align: 'center',
     fixed: !isMobile() ? 'right' : undefined,
-    show: has.hasPermOr(['schedule:log:get', 'schedule:log:stop', 'schedule:log:retry']),
+    show: has.hasPermOr(['schedule:log:stop', 'schedule:log:retry']),
   },
 ]
 
@@ -147,12 +143,6 @@ const onRetry = (record: JobLogResp) => {
   retryJob(record.id).then(() => {
     Message.success('重试成功')
   })
-}
-
-const LogDetailDrawerRef = ref<InstanceType<typeof LogDetailDrawer>>()
-// 详情
-const onDetail = (record: JobLogResp) => {
-  LogDetailDrawerRef.value?.onOpen(record)
 }
 
 const route = useRoute()

@@ -108,6 +108,22 @@ onMounted(() => {
 
     .arco-list-content {
       max-height: 184px;
+      overflow-y: auto;
+      padding-right: 8px;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-text-4);
+        border-radius: 3px;
+
+        &:hover {
+          background-color: var(--color-text-3);
+        }
+      }
 
       .arco-list-item {
         padding: 6px;

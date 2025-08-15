@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'query-string'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { useTenantStore } from '@/stores/modules/tenant'
 import { useUserStore } from '@/stores'
 import { getToken } from '@/utils/auth'
 import modalErrorWrapper from '@/utils/modal-error-wrapper'
@@ -51,11 +52,15 @@ const handleError = (msg: string) => {
 http.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     const token = getToken()
+    if (!config.headers) {
+      config.headers = {}
+    }
     if (token) {
-      if (!config.headers) {
-        config.headers = {}
-      }
       config.headers.Authorization = `Bearer ${token}`
+    }
+    const tenantStore = useTenantStore()
+    if (tenantStore.tenantEnabled && tenantStore.tenantId) {
+      config.headers['X-Tenant-Id'] = tenantStore.tenantId
     }
     return config
   },
@@ -100,7 +105,8 @@ http.interceptors.response.use(
         async onOk() {
           const userStore = useUserStore()
           await userStore.logoutCallBack()
-          await router.replace('/login')
+          const currentPath = router.currentRoute.value.fullPath
+          await router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`)
         },
       })
     } else {

@@ -1,5 +1,6 @@
 import type * as T from './type'
 import http from '@/utils/http'
+import type { LabelValueState } from '@/types/global'
 
 export type * from './type'
 
@@ -30,6 +31,11 @@ export function deleteRole(id: string) {
   return http.del(`${BASE_URL}`, { ids: [id] })
 }
 
+/** @desc 查询角色权限树 */
+export function listRolePermissionTree() {
+  return http.get<T.RolePermissionResp[]>(`${BASE_URL}/permission/tree`)
+}
+
 /** @desc 修改角色权限 */
 export function updateRolePermission(id: string, data: any) {
   return http.put(`${BASE_URL}/${id}/permission`, data)
@@ -53,4 +59,9 @@ export function unassignFromUsers(userRoleIds: Array<string | number>) {
 /** @desc 查询角色关联用户 ID */
 export function listRoleUserId(id: string) {
   return http.get(`${BASE_URL}/${id}/user/id`)
+}
+
+/** @desc 查询角色字典 */
+export function listRoleDict(query?: { name: string, status: number }) {
+  return http.get<LabelValueState[]>(`${BASE_URL}/dict`, query)
 }

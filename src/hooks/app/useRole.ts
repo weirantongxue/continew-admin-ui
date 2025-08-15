@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { listRoleDict } from '@/apis'
+import { listRoleDict } from '@/apis/system'
 import type { LabelValueState } from '@/types/global'
 
 /** 角色模块 */

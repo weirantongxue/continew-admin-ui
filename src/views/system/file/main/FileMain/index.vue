@@ -12,16 +12,35 @@
     <a-row justify="space-between" class="file-main__search">
       <!-- 左侧区域 -->
       <a-space wrap>
-        <a-upload v-permission="['system:file:upload']" :show-file-list="false" :custom-request="handleUpload">
-          <template #upload-button>
-            <a-button type="primary" shape="round">
-              <template #icon>
-                <icon-upload />
+        <!-- 上传文件按钮改为下拉菜单，包含普通上传和分片上传 -->
+        <a-dropdown trigger="click">
+          <a-button type="primary" shape="round">
+            <icon-upload />
+            上传文件
+          </a-button>
+          <template #content>
+            <!-- 普通上传 -->
+            <a-upload v-permission="['system:file:upload']" :show-file-list="false" :custom-request="handleUpload" style="display: block;">
+              <template #upload-button>
+                <a-button type="text" style="width: 100%; text-align: left;">
+                  普通上传
+                </a-button>
               </template>
-              <template #default>上传</template>
+            </a-upload>
+            <!-- 分片上传 -->
+            <a-button type="text" style="width: 100%; text-align: left;" @click="visible = true">
+              分片上传
             </a-button>
           </template>
-        </a-upload>
+        </a-dropdown>
+        <a-modal v-model:visible="visible" title="分片上传" :width="width > 1350 ? 1350 : '100%'" :footer="false" @close="search">
+          <MultipartUpload
+            v-if="visible"
+            :root-path="queryForm.parentPath"
+            :chunk-size="5 * 1024 * 1024"
+            :max-concurrent-files="3"
+          />
+        </a-modal>
 
         <a-input-group>
           <a-input v-model="queryForm.originalName" :placeholder="queryForm.type && queryForm.type !== '0' ? '请输入名称' : '在当前目录下搜索名称'" allow-clear style="width: 200px" />
@@ -101,6 +120,7 @@
 <script setup lang="ts">
 import { Message, Modal, type RequestOption } from '@arco-design/web-vue'
 import { api as viewerApi } from 'v-viewer'
+import { useWindowSize } from '@vueuse/core'
 import {
   openFileDetailModal,
   openFileRenameModal,
@@ -122,7 +142,7 @@ const FilePreview = defineAsyncComponent(() => import('@/components/FilePreview/
 const FileList = defineAsyncComponent(() => import('./FileList.vue'))
 const route = useRoute()
 const { mode, selectedFileIds, toggleMode, addSelectedFileItem } = useFileManage()
-
+const { width } = useWindowSize()
 const queryForm = reactive<FileQuery>({
   originalName: undefined,
   parentPath: (!route.query.type || route.query.type?.toString() === '0') ? '/' : undefined,
@@ -248,7 +268,6 @@ const handleMulDelete = () => {
     },
   })
 }
-
 // 上传
 const handleUpload = (options: RequestOption) => {
   const controller = new AbortController()
@@ -275,6 +294,8 @@ const handleUpload = (options: RequestOption) => {
     },
   }
 }
+
+const visible = ref(false)
 
 onBeforeRouteUpdate((to) => {
   if (!to.query.type) return

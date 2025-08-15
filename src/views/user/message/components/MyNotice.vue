@@ -55,7 +55,7 @@ import { type NoticeQuery, type NoticeResp, listUserNotice } from '@/apis/system
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
 
-defineOptions({ name: 'SystemMessage' })
+defineOptions({ name: 'UserMyNotice' })
 
 const { notice_type } = useDict('notice_type')
 
