@@ -38,9 +38,31 @@
             </a-skeleton>
             <a-descriptions v-else :column="1">
               <a-descriptions-item label="Access Key"><CellCopy :content="item.accessKey" /></a-descriptions-item>
-              <a-descriptions-item label="Endpoint">{{ item.endpoint }}</a-descriptions-item>
+              <a-descriptions-item label="Endpoint">
+                <a-typography-paragraph
+                  :ellipsis="{
+                    rows: 1,
+                    showTooltip: true,
+                    css: true,
+                  }"
+                >
+                  {{ item.endpoint }}
+                </a-typography-paragraph>
+              </a-descriptions-item>
               <a-descriptions-item label="Bucket">{{ item.bucketName }}</a-descriptions-item>
-              <a-descriptions-item label="自定义域名">{{ item.domain }}</a-descriptions-item>
+              <a-descriptions-item label="自定义域名">
+                <a-typography-paragraph
+                  :ellipsis="{
+                    rows: 1,
+                    showTooltip: true,
+                    css: true,
+                  }"
+                >
+                  {{ item.domain }}
+                </a-typography-paragraph>
+              </a-descriptions-item>
+              <a-descriptions-item label="启用回收站">{{ item.recycleBinEnabled ? '启用' : '禁用' }}</a-descriptions-item>
+              <a-descriptions-item label="回收站路径">{{ item.recycleBinPath }}</a-descriptions-item>
             </a-descriptions>
           </template>
         </CardBlock>

@@ -62,18 +62,29 @@
       </template>
       <template #action="{ record }">
         <a-space>
-          <a-link v-permission="['schedule:log:list']" title="日志" @click="onLog(record)">日志</a-link>
           <a-popconfirm content="是否确定立即执行一次任务?" type="warning" @ok="onTrigger(record)">
             <a-link v-permission="['schedule:job:trigger']" title="执行">执行</a-link>
           </a-popconfirm>
           <a-link v-permission="['schedule:job:update']" title="修改" @click="onUpdate(record)">修改</a-link>
-          <a-link v-permission="['schedule:job:delete']" status="danger" title="删除" @click="onDelete(record)">删除</a-link>
+          <a-dropdown>
+            <a-button v-if="has.hasPermOr(['schedule:log:list', 'schedule:job:delete'])" type="text" size="mini" title="更多">
+              <template #icon>
+                <icon-more :size="16" />
+              </template>
+            </a-button>
+            <template #content>
+              <a-doption v-permission="['schedule:log:list']" title="查看日志" @click="onLog(record)">查看日志</a-doption>
+              <a-doption v-permission="['schedule:job:delete']">
+                <a-link status="danger" title="删除" @click="onDelete(record)">删除</a-link>
+              </a-doption>
+            </template>
+          </a-dropdown>
         </a-space>
       </template>
     </GiTable>
 
-    <JobAddModal ref="JobAddModalRef" @save-success="reset" />
-    <JobDetailDrawer ref="JobDetailDrawerRef" />
+    <AddModal ref="AddModalRef" @save-success="reset" />
+    <DetailDrawer ref="DetailDrawerRef" />
   </GiPageLayout>
 </template>
 
@@ -81,8 +92,8 @@
 import type { TableInstance } from '@arco-design/web-vue'
 import { Message } from '@arco-design/web-vue'
 import { useRouter } from 'vue-router'
-import JobAddModal from './JobAddModal.vue'
-import JobDetailDrawer from './JobDetailDrawer.vue'
+import AddModal from './AddModal.vue'
+import DetailDrawer from './DetailDrawer.vue'
 import { type JobQuery, type JobResp, deleteJob, listGroup, listJob, triggerJob, updateJobStatus } from '@/apis/schedule'
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -121,13 +132,13 @@ const columns: TableInstance['columns'] = [
   {
     title: '操作',
     slotName: 'action',
-    width: 200,
+    width: 160,
     align: 'center',
     fixed: !isMobile() ? 'right' : undefined,
     show: has.hasPermOr([
-      'schedule:log:list',
       'schedule:job:trigger',
       'schedule:job:update',
+      'schedule:log:list',
       'schedule:job:delete',
     ]),
   },
@@ -178,21 +189,21 @@ const onTrigger = (record: JobResp) => {
   })
 }
 
-const JobAddModalRef = ref<InstanceType<typeof JobAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = () => {
-  JobAddModalRef.value?.onAdd()
+  AddModalRef.value?.onAdd()
 }
 
 // 修改
 const onUpdate = (record: JobResp) => {
-  JobAddModalRef.value?.onUpdate(record)
+  AddModalRef.value?.onUpdate(record)
 }
 
-const JobDetailDrawerRef = ref<InstanceType<typeof JobDetailDrawer>>()
+const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: JobResp) => {
-  JobDetailDrawerRef.value?.onOpen(record)
+  DetailDrawerRef.value?.onOpen(record)
 }
 
 const router = useRouter()

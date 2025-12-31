@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <RoleAddDrawer ref="RoleAddDrawerRef" @save-success="getTreeData" />
+    <AddDrawer ref="AddDrawerRef" @save-success="getTreeData" />
   </div>
 </template>
 
@@ -48,7 +48,7 @@
 import { Message, Modal } from '@arco-design/web-vue'
 import type { TreeNodeData } from '@arco-design/web-vue'
 import { mapTree } from 'xe-utils'
-import RoleAddDrawer from '../RoleAddDrawer.vue'
+import AddDrawer from '../AddDrawer.vue'
 import RightMenu from './RightMenu.vue'
 import { type RoleResp, deleteRole, listRole } from '@/apis/system/role'
 import has from '@/utils/has'
@@ -112,16 +112,16 @@ const treeData = computed(() => {
   return search(searchKey.value.toLowerCase())
 })
 
-const RoleAddDrawerRef = ref<InstanceType<typeof RoleAddDrawer>>()
+const AddDrawerRef = ref<InstanceType<typeof AddDrawer>>()
 // 新增
 const onAdd = () => {
-  RoleAddDrawerRef.value?.onAdd()
+  AddDrawerRef.value?.onAdd()
 }
 
 // 点击菜单项
 const onMenuItemClick = (mode: string, node: RoleResp) => {
   if (mode === 'update') {
-    RoleAddDrawerRef.value?.onUpdate(node.id)
+    AddDrawerRef.value?.onUpdate(node.id)
   } else if (mode === 'delete') {
     Modal.warning({
       title: '提示',

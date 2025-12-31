@@ -72,13 +72,13 @@
       </template>
     </GiTable>
 
-    <NoticeDetailDrawer ref="NoticeDetailDrawerRef" />
+    <DetailDrawer ref="DetailDrawerRef" />
   </GiPageLayout>
 </template>
 
 <script setup lang="ts">
 import type { TableInstance } from '@arco-design/web-vue'
-import NoticeDetailDrawer from './NoticeDetailDrawer.vue'
+import DetailDrawer from './DetailDrawer.vue'
 import { type NoticeQuery, type NoticeResp, deleteNotice, listNotice } from '@/apis/system'
 import { useTable } from '@/hooks'
 import { useDict } from '@/hooks/app'
@@ -153,10 +153,10 @@ const onUpdate = (record: NoticeResp) => {
   router.push({ path: '/system/notice/add', query: { id: record.id, type: 'update' } })
 }
 
-const NoticeDetailDrawerRef = ref<InstanceType<typeof NoticeDetailDrawer>>()
+const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: NoticeResp) => {
-  NoticeDetailDrawerRef.value?.onOpen(record.id)
+  DetailDrawerRef.value?.onOpen(record.id)
 }
 
 // 查看

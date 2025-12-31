@@ -1,3 +1,32 @@
+## [v4.1.0](https://github.com/continew-org/continew-admin-ui/compare/v4.0.0...v4.1.0) (2025-11-17)
+
+### ✨ 新特性
+
+- 新增分片文件上传 (Gitee#69@kiki1373639299) ([a3ce4b5](https://github.com/continew-org/continew-admin-ui/commit/a3ce4b508a0d146d62163185a4d71a9c1425eaf7))
+- 新增微信开放平台登录及绑定按钮 ([0f73944](https://github.com/continew-org/continew-admin-ui/commit/0f739442ac57fc230210c195904e12d1402be3b7))
+- 支持双列布局等更多布局选项并优化布局切换功能（同步gi-demo） (GitCode#11@kiki1373639299) ([704aacc](https://github.com/continew-org/continew-admin-ui/commit/704aacc38f655fc55b11ca4d64380334392cc073)) ([e5c9d2f](https://github.com/continew-org/continew-admin-ui/commit/e5c9d2f12f1a76e7b5186c59f0accbc774c63509)) ([e72e2ed](https://github.com/continew-org/continew-admin-ui/commit/e72e2ed1f8fbca2283d71f293afd34c02e5232d2)) ([1a0429d](https://github.com/continew-org/continew-admin-ui/commit/1a0429dfb696b1fa0d24a015fce5b4e745b5cf38))
+- 新增支持文件回收站 ([7e2c2ba](https://github.com/continew-org/continew-admin-ui/commit/7e2c2ba647a963c4d60aaeb68bcebf9566a84cfb))
+
+### 💎 功能优化
+
+- 优化操作日志json预览效果 ([eea9a93](https://github.com/continew-org/continew-admin-ui/commit/eea9a93ae681af42a1338d44d6f5192ba9097639))
+- 优化 useDownload 函数，如果指定了文件名则直接使用 ([986c03e](https://github.com/continew-org/continew-admin-ui/commit/986c03e69fb8f21c7de84532d433e7c7ba5f6735))
+- 简化命名，例如：UserAddDrawer => AddDrawer ([c57a0a2](https://github.com/continew-org/continew-admin-ui/commit/c57a0a21951b32e6a7ff889fb4da89344aa0eb0b))
+- 统一表格操作按钮最大数量为 3，超过 2 个则显示更多 ([eddd7c5](https://github.com/continew-org/continew-admin-ui/commit/eddd7c5fc6943e918ab3cfd19e0da4e528b43ff3))
+- v-model.trim => v-model（外国用户输入单词无法直接在首尾输入空格） ([4aeb795](https://github.com/continew-org/continew-admin-ui/commit/4aeb795db03c276463d9fa6dd5fdc34091d99de0))
+- 修改存储配置时，保持Secret Key为空将不更改 ([f0b24cc](https://github.com/continew-org/continew-admin-ui/commit/f0b24cc18afc8ee0cef185a385270b098cdd0b4f))
+- 移除登录页h5时第三方登录对租户开启的判断 (GitCode#10@kiki1373639299) ([619ee77](https://github.com/continew-org/continew-admin-ui/commit/619ee77fb4a756ddef40fe276a988110742a8c0a))
+
+### 🐛 问题修复
+
+- 系统内置用户，禁用分配角色功能 (GitCode#6@lishuyanla) ([1b1cbb8](https://github.com/continew-org/continew-admin-ui/commit/1b1cbb862789340ab580ef4a50126951be4bc491))
+- 修复操作日志列表根据状态筛选不生效的问题 (GitHub#76@ali-pay) ([8ddc1ff](https://github.com/continew-org/continew-admin-ui/commit/8ddc1ff516caa1a784ab8fc56ab4db51eabbd88b))
+- 修复个人中心角色信息展示错误 ([b1805dc](https://github.com/continew-org/continew-admin-ui/commit/b1805dc41beca98012c8bc292fbd67659dfaa91c))
+- 补充UserInfo定义的新增字段 (GitCode#9@maqiang9527) ([d85ac20](https://github.com/continew-org/continew-admin-ui/commit/d85ac20d7e642c0fa43051010a7f62f09871ed3a))
+- 修复腾讯云短信配置缺失问题，配置腾讯云短信，需要增加输入 sdkAppId 配置项 ([6477a6d](https://github.com/continew-org/continew-admin-ui/commit/6477a6de3e5d8a332ef020f4b2958702d494b958))
+- 修复混合布局模式下详情页左侧菜单消失问题 (GitCode#12@kiki1373639299) ([069175b](https://github.com/continew-org/continew-admin-ui/commit/069175bf1648bc42371bbae58d56c9245ad8bbe0))
+- 修复重命名文件夹后，文件管理目录导航显示错误 (GitHub#78@ppxb) ([26e3738](https://github.com/continew-org/continew-admin-ui/commit/26e3738b74fe22f31ff2d8c0c0863e9c10b5e1ce))
+
 ## [v4.0.0](https://github.com/continew-org/continew-admin-ui/compare/v3.7.0...v4.0.0) (2025-07-27)
 
 ### ✨ 新特性

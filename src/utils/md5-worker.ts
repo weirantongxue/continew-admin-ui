@@ -29,8 +29,6 @@ function calculateFileMd5Optimized(file: File, taskId: string, blockSize: number
   let activeWorkers = 0
   let nextBlockIndex = 0
 
-  console.log(`[Worker] 使用并发块处理: 最大并发 ${maxConcurrency}，总块数: ${blocks}`)
-
   function processBlock(blockIndex: number): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
@@ -63,9 +61,6 @@ function calculateFileMd5Optimized(file: File, taskId: string, blockSize: number
               } else {
                 blockHashes[blockIndex] = spark.end()
                 processedBlocks++
-
-                console.log(`[Worker] 块 ${blockIndex + 1}/${blocks} 处理完成`)
-
                 resolve()
               }
             } else {
@@ -116,11 +111,10 @@ function calculateFileMd5Optimized(file: File, taskId: string, blockSize: number
             const finalSpark = new SparkMD5.ArrayBuffer()
             blockHashes.forEach((hash) => {
               const hashBuffer = new TextEncoder().encode(hash)
-              finalSpark.append(hashBuffer)
+              finalSpark.append(hashBuffer.buffer.slice(hashBuffer.byteOffset, hashBuffer.byteOffset + hashBuffer.byteLength))
             })
             const finalMd5 = finalSpark.end()
 
-            console.info(`[Worker] 所有块完成，最终 MD5: ${finalMd5}`)
             globalThis.postMessage({
               type: 'complete',
               taskId,

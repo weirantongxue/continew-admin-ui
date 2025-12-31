@@ -5,29 +5,10 @@
         「复制配置」按钮，并将配置粘贴到 src/config/settings.ts 文件中。
       </a-alert>
       <a-divider v-if="settingOpen" orientation="center">系统布局</a-divider>
-      <a-row v-if="settingOpen" justify="center">
-        <a-space>
-          <a-badge>
-            <template #content>
-              <icon-check-circle-fill
-                v-if="appStore.layout === 'left'" style="color: rgb(var(--success-6))"
-                :size="16"
-              ></icon-check-circle-fill>
-            </template>
-            <LayoutItem mode="left" @click="appStore.layout = 'left'"></LayoutItem>
-            <p class="layout-text">默认布局</p>
-          </a-badge>
-          <a-badge>
-            <template #content>
-              <icon-check-circle-fill
-                v-if="appStore.layout === 'mix'" :size="16"
-                style="color: rgb(var(--success-6))"
-              ></icon-check-circle-fill>
-            </template>
-            <LayoutItem mode="mix" @click="appStore.layout = 'mix'"></LayoutItem>
-            <p class="layout-text">混合布局</p>
-          </a-badge>
-        </a-space>
+      <a-row v-if="settingOpen" :gutter="[8, 8]">
+        <a-col v-for="item in LAYOUT_OPTIONS" :key="item.value" :span="8">
+          <LayoutItem :mode="item.value" :name="item.label" @click="toggleLayout(item.value)" />
+        </a-col>
       </a-row>
 
       <a-divider orientation="center">系统主题</a-divider>
@@ -111,6 +92,15 @@ defineOptions({ name: 'SettingDrawer' })
 const appStore = useAppStore()
 const visible = ref(false)
 const settingOpen = JSON.parse(import.meta.env.VITE_APP_SETTING)
+interface LayoutItemProps { label: string, value: App.AppSettings['layout'] }
+
+/** 布局选项 */
+const LAYOUT_OPTIONS: LayoutItemProps[] = [
+  { label: '默认布局', value: 'left' },
+  { label: '混合布局', value: 'mix' },
+  { label: '顶部布局', value: 'top' },
+  { label: '双列布局', value: 'columns' },
+]
 const tabModeList: App.TabItem[] = [
   { label: '卡片', value: 'card' },
   { label: '间隔卡片', value: 'card-gutter' },
@@ -189,6 +179,10 @@ const copySettings = () => {
   } else {
     Message.error({ content: '请检查浏览器权限是否开启' })
   }
+}
+/** 切换布局 */
+const toggleLayout = (layout: App.AppSettings['layout']) => {
+  appStore.layout = layout
 }
 
 defineExpose({ open })

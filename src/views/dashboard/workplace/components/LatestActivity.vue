@@ -20,7 +20,7 @@
       <a-skeleton-line :rows="10" />
     </a-skeleton>
     <div v-else>
-      <a-empty v-if="dataList.length === 0">暂无动态</a-empty>
+      <a-empty v-if="dataList.length === 0" />
       <a-comment
         v-for="(item, index) in dataList"
         v-else

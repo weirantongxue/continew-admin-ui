@@ -11,14 +11,14 @@
   >
     <a-form ref="formRef" :model="form" :rules="rules" auto-label-width size="large">
       <a-form-item field="name" label="名称">
-        <a-input v-model.trim="form.name" placeholder="请输入名称" />
+        <a-input v-model="form.name" placeholder="请输入名称" />
       </a-form-item>
       <a-form-item label="排序" field="sort">
         <a-input-number v-model="form.sort" placeholder="请输入排序" :min="1" mode="button" />
       </a-form-item>
       <a-form-item label="描述" field="description">
         <a-textarea
-          v-model.trim="form.description"
+          v-model="form.description"
           placeholder="请输入描述"
           show-word-limit
           :max-length="200"

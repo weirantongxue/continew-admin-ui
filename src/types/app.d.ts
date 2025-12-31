@@ -10,7 +10,7 @@ declare namespace App {
     menuAccordion: boolean
     menuDark: boolean
     copyrightDisplay: boolean
-    layout: 'left' | 'mix'
+    layout: 'left' | 'mix' | 'columns' | 'top'
     isOpenWatermark?: boolean
     watermark?: string
     enableColorWeaknessMode?: boolean

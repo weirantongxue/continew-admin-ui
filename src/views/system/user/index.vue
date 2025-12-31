@@ -53,17 +53,8 @@
         <a-space>
           <a-link v-permission="['system:user:get']" title="详情" @click="onDetail(record)">详情</a-link>
           <a-link v-permission="['system:user:update']" title="修改" @click="onUpdate(record)">修改</a-link>
-          <a-link
-            v-permission="['system:user:delete']"
-            status="danger"
-            :disabled="record.isSystem"
-            :title="record.isSystem ? '系统内置数据不能删除' : '删除'"
-            @click="onDelete(record)"
-          >
-            删除
-          </a-link>
           <a-dropdown>
-            <a-button v-if="has.hasPermOr(['system:user:resetPwd', 'system:user:updateRole'])" type="text" size="mini" title="更多">
+            <a-button v-if="has.hasPermOr(['system:user:resetPwd', 'system:user:updateRole', 'system:user:delete'])" type="text" size="mini" title="更多">
               <template #icon>
                 <icon-more :size="16" />
               </template>
@@ -71,28 +62,38 @@
             <template #content>
               <a-doption v-permission="['system:user:resetPwd']" title="重置密码" @click="onResetPwd(record)">重置密码</a-doption>
               <a-doption v-permission="['system:user:updateRole']" :disabled="record.isSystem" title="分配角色" @click="onUpdateRole(record)">分配角色</a-doption>
+              <a-doption v-permission="['system:user:delete']">
+                <a-link
+                  status="danger"
+                  :disabled="record.isSystem"
+                  :title="record.isSystem ? '系统内置数据不能删除' : '删除'"
+                  @click="onDelete(record)"
+                >
+                  删除
+                </a-link>
+              </a-doption>
             </template>
           </a-dropdown>
         </a-space>
       </template>
     </GiTable>
 
-    <UserAddDrawer ref="UserAddDrawerRef" @save-success="search" />
-    <UserImportDrawer ref="UserImportDrawerRef" @save-success="search" />
-    <UserDetailDrawer ref="UserDetailDrawerRef" />
-    <UserResetPwdModal ref="UserResetPwdModalRef" />
-    <UserUpdateRoleModal ref="UserUpdateRoleModalRef" @save-success="search" />
+    <AddDrawer ref="AddDrawerRef" @save-success="search" />
+    <ImportDrawer ref="ImportDrawerRef" @save-success="search" />
+    <DetailDrawer ref="DetailDrawerRef" />
+    <PwdResetModal ref="PwdResetModalRef" />
+    <RoleUpdateModal ref="RoleUpdateModalRef" @save-success="search" />
   </GiPageLayout>
 </template>
 
 <script setup lang="ts">
 import type { TableInstance } from '@arco-design/web-vue'
 import DeptTree from './dept/index.vue'
-import UserAddDrawer from './UserAddDrawer.vue'
-import UserImportDrawer from './UserImportDrawer.vue'
-import UserDetailDrawer from './UserDetailDrawer.vue'
-import UserResetPwdModal from './UserResetPwdModal.vue'
-import UserUpdateRoleModal from './UserUpdateRoleModal.vue'
+import AddDrawer from './AddDrawer.vue'
+import ImportDrawer from './ImportDrawer.vue'
+import DetailDrawer from './DetailDrawer.vue'
+import PwdResetModal from './PwdResetModal.vue'
+import RoleUpdateModal from './RoleUpdateModal.vue'
 import { type UserResp, deleteUser, exportUser, listUser } from '@/apis/system/user'
 import { DisEnableStatusList } from '@/constant/common'
 import { useDownload, useResetReactive, useTable } from '@/hooks'
@@ -174,15 +175,15 @@ const columns: TableInstance['columns'] = [
     title: '操作',
     dataIndex: 'action',
     slotName: 'action',
-    width: 190,
+    width: 160,
     align: 'center',
     fixed: !isMobile() ? 'right' : undefined,
     show: has.hasPermOr([
       'system:user:get',
       'system:user:update',
-      'system:user:delete',
       'system:user:resetPwd',
       'system:user:updateRole',
+      'system:user:delete',
     ]),
   },
 ]
@@ -212,39 +213,39 @@ const handleSelectDept = (keys: Array<any>) => {
   search()
 }
 
-const UserImportDrawerRef = ref<InstanceType<typeof UserImportDrawer>>()
+const ImportDrawerRef = ref<InstanceType<typeof ImportDrawer>>()
 // 导入
 const onImport = () => {
-  UserImportDrawerRef.value?.onOpen()
+  ImportDrawerRef.value?.onOpen()
 }
 
-const UserAddDrawerRef = ref<InstanceType<typeof UserAddDrawer>>()
+const AddDrawerRef = ref<InstanceType<typeof AddDrawer>>()
 // 新增
 const onAdd = () => {
-  UserAddDrawerRef.value?.onAdd()
+  AddDrawerRef.value?.onAdd()
 }
 
 // 修改
 const onUpdate = (record: UserResp) => {
-  UserAddDrawerRef.value?.onUpdate(record.id)
+  AddDrawerRef.value?.onUpdate(record.id)
 }
 
-const UserDetailDrawerRef = ref<InstanceType<typeof UserDetailDrawer>>()
+const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: UserResp) => {
-  UserDetailDrawerRef.value?.onOpen(record.id)
+  DetailDrawerRef.value?.onOpen(record.id)
 }
 
-const UserResetPwdModalRef = ref<InstanceType<typeof UserResetPwdModal>>()
+const PwdResetModalRef = ref<InstanceType<typeof PwdResetModal>>()
 // 重置密码
 const onResetPwd = (record: UserResp) => {
-  UserResetPwdModalRef.value?.onOpen(record.id)
+  PwdResetModalRef.value?.onOpen(record.id)
 }
 
-const UserUpdateRoleModalRef = ref<InstanceType<typeof UserUpdateRoleModal>>()
+const RoleUpdateModalRef = ref<InstanceType<typeof RoleUpdateModal>>()
 // 分配角色
 const onUpdateRole = (record: UserResp) => {
-  UserUpdateRoleModalRef.value?.onOpen(record.id)
+  RoleUpdateModalRef.value?.onOpen(record.id)
 }
 </script>
 

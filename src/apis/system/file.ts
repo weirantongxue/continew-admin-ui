@@ -4,6 +4,7 @@ import http from '@/utils/http'
 export type * from './type'
 
 const BASE_URL = '/system/file'
+const RECYCLE_URL = `${BASE_URL}/recycle`
 
 /** @desc 上传文件 */
 export function uploadFile(data: FormData) {
@@ -43,4 +44,24 @@ export function createDir(parentPath: string, name: string) {
 /** @desc 查询文件夹大小 */
 export function calcDirSize(id: string) {
   return http.get<T.FileDirCalcSizeResp>(`${BASE_URL}/dir/${id}/size`)
+}
+
+/** @desc 查询回收站文件列表 */
+export function listRecycleFiles(query: T.FilePageQuery) {
+  return http.get<PageRes<T.FileItem[]>>(`${RECYCLE_URL}`, query)
+}
+
+/** @desc 还原回收站文件 */
+export function restoreRecycleFile(id: string) {
+  return http.put(`${RECYCLE_URL}/restore/${id}`)
+}
+
+/** @desc 删除回收站文件 */
+export function deleteRecycleFile(id: string) {
+  return http.del(`${RECYCLE_URL}/${id}`)
+}
+
+/** @desc 清空回收站 */
+export function cleanRecycleBin() {
+  return http.del(`${RECYCLE_URL}/clean`)
 }

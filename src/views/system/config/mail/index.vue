@@ -18,7 +18,7 @@
           :help="mailConfig.MAIL_PROTOCOL.description"
           hide-asterisk
         >
-          <a-select v-model.trim="form.MAIL_PROTOCOL">
+          <a-select v-model="form.MAIL_PROTOCOL">
             <a-option label="SMTP" value="smtp" />
           </a-select>
         </a-form-item>
@@ -28,7 +28,7 @@
           :help="mailConfig.MAIL_HOST.description"
           hide-asterisk
         >
-          <a-input v-model.trim="form.MAIL_HOST" />
+          <a-input v-model="form.MAIL_HOST" />
         </a-form-item>
         <a-form-item
           field="MAIL_PORT"
@@ -44,7 +44,7 @@
           :help="mailConfig.MAIL_USERNAME.description"
           hide-asterisk
         >
-          <a-input v-model.trim="form.MAIL_USERNAME" />
+          <a-input v-model="form.MAIL_USERNAME" />
         </a-form-item>
         <a-form-item
           field="MAIL_PASSWORD"
@@ -52,7 +52,7 @@
           :help="mailConfig.MAIL_PASSWORD.description"
           hide-asterisk
         >
-          <a-input-password v-model.trim="form.MAIL_PASSWORD" />
+          <a-input-password v-model="form.MAIL_PASSWORD" />
         </a-form-item>
         <a-form-item
           field="MAIL_SSL_ENABLED"

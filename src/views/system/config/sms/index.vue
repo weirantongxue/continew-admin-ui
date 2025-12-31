@@ -71,14 +71,14 @@
       </template>
     </GiTable>
 
-    <SmsConfigAddModal ref="SmsConfigAddModalRef" @save-success="search" />
+    <AddModal ref="AddModalRef" @save-success="search" />
   </GiPageLayout>
 </template>
 
 <script setup lang="tsx">
 import { Message, Modal } from '@arco-design/web-vue'
 import type { TableInstance } from '@arco-design/web-vue'
-import SmsConfigAddModal from './SmsConfigAddModal.vue'
+import AddModal from './AddModal.vue'
 import {
   type SmsConfigQuery,
   type SmsConfigResp,
@@ -208,15 +208,15 @@ const onSetDefault = (record: SmsConfigResp) => {
   })
 }
 
-const SmsConfigAddModalRef = ref<InstanceType<typeof SmsConfigAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = () => {
-  SmsConfigAddModalRef.value?.onAdd()
+  AddModalRef.value?.onAdd()
 }
 
 // 修改
 const onUpdate = (record: SmsConfigResp) => {
-  SmsConfigAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 
 const router = useRouter()

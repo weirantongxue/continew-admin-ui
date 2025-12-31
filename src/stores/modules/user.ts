@@ -33,6 +33,7 @@ const storeSetup = () => {
     registrationDate: '',
     deptName: '',
     roles: [],
+    roleNames: [],
     permissions: [],
   })
   const nickname = computed(() => userInfo.nickname)

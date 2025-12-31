@@ -14,11 +14,11 @@
     </div>
   </a-card>
 
-  <StorageAddModal ref="StorageAddModalRef" @save-success="search" />
+  <AddModal ref="AddModalRef" @save-success="search" />
 </template>
 
 <script lang="ts" setup>
-import StorageAddModal from '../StorageAddModal.vue'
+import AddModal from '../AddModal.vue'
 
 const props = defineProps({
   type: {
@@ -35,10 +35,10 @@ const search = () => {
   emit('save-success')
 }
 
-const StorageAddModalRef = ref<InstanceType<typeof StorageAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = () => {
-  StorageAddModalRef.value?.onAdd(props.type)
+  AddModalRef.value?.onAdd(props.type)
 }
 </script>
 
@@ -59,7 +59,7 @@ const onAdd = () => {
   }
 
   .content {
-    height: 48px;
+    height: 80px;
   }
 }
 
@@ -78,15 +78,15 @@ const onAdd = () => {
   }
 
   :deep(.arco-card-body) {
-    padding-top: 45px;
-    padding-bottom: 63px;
+    padding-top: 55px;
+    padding-bottom: 53px;
   }
 }
 
 .card-large {
   :deep(.arco-card-body) {
-    padding-top: 65px;
-    padding-bottom: 73px;
+    padding-top: 75px;
+    padding-bottom: 63px;
   }
 }
 </style>

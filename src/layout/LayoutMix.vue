@@ -1,35 +1,38 @@
+<!--
+  @file LayoutMix 组件
+  @description 混合布局组件，支持顶部导航和左侧菜单组合的布局方式
+-->
 <template>
   <div class="layout-mix">
+    <!-- 左侧菜单区域 -->
     <section
       v-if="isDesktop" class="layout-mix-left" :class="{ 'app-menu-dark': appStore.menuDark }"
       :style="appStore.menuDark ? appStore.themeCSSVar : undefined"
     >
-      <Logo :collapsed="appStore.menuCollapse"></Logo>
-      <div class="menu-container">
-        <Menu :menus="leftMenus" :menu-style="{ width: '220px', flex: 1 }"></Menu>
-      </div>
+      <Logo :collapsed="appStore.menuCollapse" />
+      <Menu :menus="twoLevelMenus" :menu-style="{ flex: 1 }" />
       <WwAds class="ads" />
     </section>
 
+    <!-- 右侧内容区域 -->
     <section class="layout-mix-right">
       <header class="header">
-        <MenuFoldBtn></MenuFoldBtn>
+        <MenuFoldBtn />
         <a-menu
           v-if="isDesktop" mode="horizontal" :selected-keys="activeMenu" :auto-open-selected="false"
-          :trigger-props="{ animationName: 'slide-dynamic-origin' }" @menu-item-click="onMenuItemClick"
+          :trigger-props="menuTriggerProps" @menu-item-click="handleMenuItemClickByPath"
         >
-          <a-menu-item v-for="item in topMenus" :key="item.path">
+          <a-menu-item v-for="item in oneLevelMenus" :key="item.path">
             <template #icon>
-              <GiSvgIcon :name="getMenuIcon(item)" :size="24" />
+              <GiSvgIcon :name="getMenuIcon(item) || ''" :size="24" />
             </template>
             <span>{{ item.meta?.title || item.children?.[0]?.meta?.title || '' }}</span>
           </a-menu-item>
         </a-menu>
-        <HeaderRightBar></HeaderRightBar>
+        <HeaderRightBar />
       </header>
-
-      <Tabs></Tabs>
-      <Main></Main>
+      <Tabs v-if="appStore.tab" />
+      <Main />
       <GiFooter v-if="appStore.copyrightDisplay" />
     </section>
 
@@ -39,38 +42,36 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { searchTree } from 'xe-utils'
-import Main from './components/Main.vue'
-import Tabs from './components/Tabs/index.vue'
-import Menu from './components/Menu/index.vue'
 import HeaderRightBar from './components/HeaderRightBar/index.vue'
 import Logo from './components/Logo.vue'
+import Main from './components/Main.vue'
+import Menu from './components/Menu/index.vue'
 import MenuFoldBtn from './components/MenuFoldBtn.vue'
-import WwAds from './components/WwAds.vue'
-import GiFooter from '@/components/GiFooter/index.vue'
-import NoticePopup from '@/views/user/message/components/NoticePopup.vue'
-import { useAppStore, useRouteStore } from '@/stores'
-import { isExternal } from '@/utils/validate'
-import { filterTree } from '@/utils'
+import Tabs from './components/Tabs/index.vue'
+import { useAppStore } from '@/stores'
+import { useLevelMenu } from '@/layout/hooks/useLevelMenu'
 import { useDevice } from '@/hooks'
 import { getToken } from '@/utils/auth'
 
-defineOptions({ name: 'LayoutMix' })
-const route = useRoute()
-const router = useRouter()
-const appStore = useAppStore()
-const routeStore = useRouteStore()
-const { isDesktop } = useDevice()
-// 过滤是菜单的路由
-const cloneRoutes = JSON.parse(JSON.stringify(routeStore.routes)) as RouteRecordRaw[]
-const menuRoutes = filterTree(cloneRoutes, (i) => i.meta?.hidden === false)
+import WwAds from '@/layout/components/WwAds.vue'
+import NoticePopup from '@/views/user/message/components/NoticePopup.vue'
 
-// 顶部一级菜单
-const topMenus = ref<RouteRecordRaw[]>([])
-topMenus.value = JSON.parse(JSON.stringify(menuRoutes))
+/** 组件名称 */
+defineOptions({ name: 'LayoutMix' })
+
+const appStore = useAppStore()
+const { isDesktop } = useDevice()
+
+/** 菜单配置 */
+const menuTriggerProps = {
+  animationName: 'slide-dynamic-origin',
+}
+
+const { oneLevelMenus, twoLevelMenus, oneLevelMenuActiveRoute, getOneLevelMenus, handleMenuItemClickByPath } = useLevelMenu()
+getOneLevelMenus()
+
+const activeMenu = computed(() => [oneLevelMenuActiveRoute.value?.path ?? ''])
 
 // 公告弹窗引用
 const noticePopupRef = ref<InstanceType<typeof NoticePopup>>()
@@ -86,53 +87,15 @@ const checkAndShowNotices = () => {
     }, 1000) // 延迟1秒显示，让页面先加载完成
   }
 }
-
 const getMenuIcon = (item: RouteRecordRaw) => {
-  return item.meta?.icon || item.children?.[0].meta?.icon
+  return item.meta?.icon || item.children?.[0]?.meta?.icon
 }
-
-// 克隆是菜单的路由
-const cloneMenuRoutes: RouteRecordRaw[] = JSON.parse(JSON.stringify(menuRoutes))
-// 顶部一级菜单选中的
-const activeMenu = ref<string[]>([])
-// 左侧的菜单
-const leftMenus = ref<RouteRecordRaw[]>([])
-// 获取左侧菜单
-const getLeftMenus = (key: string) => {
-  const arr = searchTree(cloneMenuRoutes, (i) => i.path === key, { children: 'children' })
-  const rootPath = arr.length ? arr[0].path : ''
-  const obj = cloneMenuRoutes.find((i) => i.path === rootPath)
-  activeMenu.value = obj ? [obj.path] : ['']
-  leftMenus.value = obj ? (obj.children as RouteRecordRaw[]) : []
-}
-
-const onMenuItemClick = (key: string) => {
-  if (isExternal(key)) {
-    window.open(key)
-    return
-  }
-  setTimeout(() => getLeftMenus(key))
-  const obj = topMenus.value.find((i) => i.path === key)
-  if (obj && obj.redirect === 'noRedirect') return
-  router.push({ path: key })
-}
-
-watch(
-  () => route.path,
-  (newPath) => {
-    nextTick(() => {
-      getLeftMenus(newPath)
-    })
-  },
-  { immediate: true },
-)
-
 onMounted(() => {
   checkAndShowNotices()
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 :deep(.arco-menu-pop) {
   white-space: nowrap;
 }
@@ -141,13 +104,13 @@ onMounted(() => {
 
   // Menu菜单组件修改
   .arco-menu-icon {
-    margin-right: 0;
     padding: 10px 0;
+    margin-right: 0;
   }
 
   .arco-menu-has-icon {
-    padding: 0;
     justify-content: center;
+    padding: 0;
   }
 
   .arco-menu-title {
@@ -169,43 +132,36 @@ onMounted(() => {
 }
 
 .layout-mix {
-  height: 100%;
   display: flex;
   align-items: stretch;
+  height: 100%;
   overflow: hidden;
 
   &-left {
-    border-right: 1px solid var(--color-border);
-    background-color: var(--color-bg-1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: 100vh;
-
-    .menu-container {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+    background-color: var(--color-bg-1);
+    border-right: 1px solid var(--color-border);
   }
 
   &-right {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     overflow: hidden;
   }
 }
 
 .header {
-  padding: 0 $padding;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   height: 56px;
+  padding: 0 $padding;
+  overflow: hidden;
   color: var(--color-text-1);
   background: var(--color-bg-1);
   border-bottom: 1px solid var(--color-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  overflow: hidden;
 }
 </style>

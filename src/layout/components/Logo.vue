@@ -2,7 +2,7 @@
   <section class="system-logo" :class="{ collapsed: props.collapsed }" @click="toHome">
     <img v-if="logo" class="logo" :src="logo" alt="logo" />
     <img v-else class="logo" src="/logo.svg" alt="logo" />
-    <span class="system-name gi_line_1">{{ title }}</span>
+    <span v-if="!props.hideName" class="system-name gi_line_1">{{ title }}</span>
   </section>
 </template>
 
@@ -11,13 +11,19 @@ import { useAppStore } from '@/stores'
 
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
+  hideName: false,
+
 })
 const appStore = useAppStore()
 const title = computed(() => appStore.getTitle())
 const logo = computed(() => appStore.getLogo())
 
+/** Props 类型定义 */
 interface Props {
+  /** 是否折叠状态 */
   collapsed?: boolean
+  /** 是否隐藏名称 */
+  hideName?: boolean
 }
 const router = useRouter()
 // 跳转首页

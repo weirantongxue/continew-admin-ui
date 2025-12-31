@@ -56,39 +56,40 @@
         <a-space>
           <a-link v-permission="['open:app:get']" title="详情" @click="onDetail(record)">详情</a-link>
           <a-link v-permission="['open:app:update']" title="修改" @click="onUpdate(record)">修改</a-link>
-          <a-link
-            v-permission="['open:app:delete']"
-            status="danger"
-            :disabled="record.disabled"
-            :title="record.disabled ? '禁止删除' : '删除'"
-            @click="onDelete(record)"
-          >
-            删除
-          </a-link>
           <a-dropdown>
-            <a-button v-if="has.hasPermOr(['open:app:resetSecret'])" type="text" size="mini" title="更多">
+            <a-button v-if="has.hasPermOr(['open:app:resetSecret', 'open:app:delete'])" type="text" size="mini" title="更多">
               <template #icon>
                 <icon-more :size="16" />
               </template>
             </a-button>
             <template #content>
               <a-doption v-permission="['open:app:resetSecret']" title="重置密钥" @click="onResetSecret(record)">重置密钥</a-doption>
+              <a-doption v-permission="['open:app:delete']">
+                <a-link
+                  status="danger"
+                  :disabled="record.disabled"
+                  :title="record.disabled ? '禁止删除' : '删除'"
+                  @click="onDelete(record)"
+                >
+                  删除
+                </a-link>
+              </a-doption>
             </template>
           </a-dropdown>
         </a-space>
       </template>
     </GiTable>
 
-    <AppAddModal ref="AppAddModalRef" @save-success="search" />
-    <AppDetailDrawer ref="AppDetailDrawerRef" />
+    <AddModal ref="AddModalRef" @save-success="search" />
+    <DetailDrawer ref="DetailDrawerRef" />
   </GiPageLayout>
 </template>
 
 <script setup lang="ts">
 import type { TableInstance } from '@arco-design/web-vue'
 import { Message, Modal } from '@arco-design/web-vue'
-import AppAddModal from './AppAddModal.vue'
-import AppDetailDrawer from './AppDetailDrawer.vue'
+import AddModal from './AddModal.vue'
+import DetailDrawer from './DetailDrawer.vue'
 import {
   type AppQuery,
   type AppResp,
@@ -137,14 +138,14 @@ const columns: TableInstance['columns'] = [
     title: '操作',
     dataIndex: 'action',
     slotName: 'action',
-    width: 190,
+    width: 160,
     align: 'center',
     fixed: !isMobile() ? 'right' : undefined,
     show: has.hasPermOr([
       'open:app:get',
       'open:app:update',
-      'open:app:delete',
       'open:app:resetSecret',
+      'open:app:delete',
     ]),
   },
 ]
@@ -200,21 +201,21 @@ const onResetSecret = async (record: AppResp) => {
   })
 }
 
-const AppAddModalRef = ref<InstanceType<typeof AppAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = () => {
-  AppAddModalRef.value?.onAdd()
+  AddModalRef.value?.onAdd()
 }
 
 // 修改
 const onUpdate = (record: AppResp) => {
-  AppAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 
-const AppDetailDrawerRef = ref<InstanceType<typeof AppDetailDrawer>>()
+const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: AppResp) => {
-  AppDetailDrawerRef.value?.onOpen(record.id)
+  DetailDrawerRef.value?.onOpen(record.id)
 }
 </script>
 

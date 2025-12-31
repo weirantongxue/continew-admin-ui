@@ -5,7 +5,7 @@
       :data="dataList"
       :columns="columns"
       :loading="loading"
-      :scroll="{ x: '100%', y: '100%', minWidth: 1200 }"
+      :scroll="{ x: '100%', y: '100%', minWidth: 1400 }"
       :pagination="pagination"
       :disabled-tools="['size']"
       :disabled-column-keys="['clientKey']"
@@ -53,16 +53,16 @@
       </template>
     </GiTable>
 
-    <ClientAddModal ref="ClientAddModalRef" @save-success="search" />
-    <ClientDetailDrawer ref="ClientDetailDrawerRef" />
+    <AddModal ref="AddModalRef" @save-success="search" />
+    <DetailDrawer ref="DetailDrawerRef" />
   </GiPageLayout>
 </template>
 
 <script setup lang="tsx">
 import type { LabelValue } from '@arco-design/web-vue/es/tree-select/interface'
-import type { TableInstance } from '@arco-design/web-vue'
-import ClientAddModal from './ClientAddModal.vue'
-import ClientDetailDrawer from './ClientDetailDrawer.vue'
+import { type TableInstance, Tag } from '@arco-design/web-vue'
+import AddModal from './AddModal.vue'
+import DetailDrawer from './DetailDrawer.vue'
 import { type ClientQuery, type ClientResp, deleteClient, listClient } from '@/apis/system/client'
 import { DisEnableStatusList } from '@/constant/common'
 import { useTable } from '@/hooks'
@@ -79,7 +79,9 @@ defineOptions({ name: 'SystemClient' })
 const {
   client_type,
   auth_type_enum,
-} = useDict('client_type', 'auth_type_enum')
+  replaced_range_enum,
+  logout_mode_enum,
+} = useDict('client_type', 'auth_type_enum', 'replaced_range_enum', 'logout_mode_enum')
 
 const queryForm = reactive<ClientQuery>({
   clientType: '',
@@ -89,7 +91,7 @@ const queryForm = reactive<ClientQuery>({
 })
 const formatAuthType = (data: string[]) => {
   return data.map((item: string) => {
-    return auth_type_enum.value.find((d: LabelValue) => d.value === item).label
+    return auth_type_enum.value?.find((d: LabelValue) => d.value === item)?.label
   })
 }
 
@@ -112,6 +114,7 @@ const columns: TableInstance['columns'] = [
     title: '客户端 ID',
     dataIndex: 'clientId',
     slotName: 'clientId',
+    width: 180,
     ellipsis: true,
     tooltip: true,
     render: ({ record }) => {
@@ -145,7 +148,7 @@ const columns: TableInstance['columns'] = [
     },
   },
   { title: 'Token 最低活跃频率', dataIndex: 'activeTimeout', slotName: 'activeTimeout', width: 180, align: 'center', render: ({ record }) => `${record.activeTimeout} 秒` },
-  { title: 'Token 有效期', dataIndex: 'timeout', slotName: 'timeout', align: 'center', render: ({ record }) => `${record.timeout} 秒` },
+  { title: 'Token 有效期', dataIndex: 'timeout', slotName: 'timeout', width: 180, align: 'center', render: ({ record }) => `${record.timeout} 秒` },
   {
     title: '状态',
     dataIndex: 'status',
@@ -155,10 +158,39 @@ const columns: TableInstance['columns'] = [
       return <GiCellStatus status={record.status} />
     },
   },
+  {
+    title: '多地登录',
+    dataIndex: 'isConcurrent',
+    align: 'center',
+    render: ({ record }) => {
+      return <Tag>{record.isConcurrent ? '允许' : '不允许'}</Tag>
+    },
+  },
+  {
+    title: '下线范围',
+    dataIndex: 'replacedRange',
+    align: 'center',
+    render: ({ record }) => {
+      return <GiCellTag value={record.replacedRange} dict={replaced_range_enum.value} />
+    },
+  },
+  {
+    title: '登录数量',
+    dataIndex: 'maxLoginCount',
+    align: 'center',
+    render: ({ record }) => {
+      return record.maxLoginCount === -1 ? '不限制' : record.maxLoginCount
+    },
+  },
+  {
+    title: '溢出处理',
+    dataIndex: 'overflowLogoutMode',
+    align: 'center',
+    render: ({ record }) => {
+      return <GiCellTag value={record.overflowLogoutMode} dict={logout_mode_enum.value} />
+    },
+  },
   { title: '创建人', dataIndex: 'createUserString', width: 140, ellipsis: true, tooltip: true, show: false },
-  { title: '创建时间', dataIndex: 'createTime', width: 180 },
-  { title: '修改人', dataIndex: 'updateUserString', width: 140, ellipsis: true, tooltip: true, show: false },
-  { title: '修改时间', dataIndex: 'updateTime', width: 180, show: false },
   {
     title: '操作',
     dataIndex: 'action',
@@ -186,21 +218,21 @@ const onDelete = (record: ClientResp) => {
   })
 }
 
-const ClientAddModalRef = ref<InstanceType<typeof ClientAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = () => {
-  ClientAddModalRef.value?.onAdd()
+  AddModalRef.value?.onAdd()
 }
 
 // 修改
 const onUpdate = (record: ClientResp) => {
-  ClientAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 
-const ClientDetailDrawerRef = ref<InstanceType<typeof ClientDetailDrawer>>()
+const DetailDrawerRef = ref<InstanceType<typeof DetailDrawer>>()
 // 详情
 const onDetail = (record: ClientResp) => {
-  ClientDetailDrawerRef.value?.onOpen(record.id)
+  DetailDrawerRef.value?.onOpen(record.id)
 }
 </script>
 

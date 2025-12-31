@@ -2,7 +2,7 @@
   <a-card title="第三方账号" bordered class="gradient-card">
     <div v-for="item in modeList" :key="item.title">
       <div class="item">
-        <div class="icon-wrapper"><GiSvgIcon :name="item.icon" :size="26" /></div>
+        <GiSvgIcon :name="item.icon" :size="38" />
         <div class="info">
           <div class="info-top">
             <span class="label">{{ item.title }}</span>
@@ -72,6 +72,14 @@ const initData = () => {
         type: 'github',
         jumpMode: 'link',
         status: socialList.value.includes('GITHUB'),
+      },
+      {
+        title: '绑定微信',
+        icon: 'wechat',
+        subtitle: `${socialList.value.includes('WECHAT_OPEN') ? '' : '绑定后，'}可通过微信进行登录`,
+        type: 'wechat_open',
+        jumpMode: 'link',
+        status: socialList.value.includes('WECHAT_OPEN'),
       },
     ]
   })

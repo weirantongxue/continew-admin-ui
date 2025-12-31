@@ -11,7 +11,7 @@ export default function appInfo(): Plugin {
       // eslint-disable-next-line no-console
       console.log(
         boxen(
-          `${bold(green(`${bgGreen('ContiNew Admin v4.1.0-SNAPSHOT')}`))}\n${cyan('在线文档：')}${underline('https://continew.top')}\n${cyan('常见问题：')}${underline('https://continew.top/admin/faq.html')}\n${cyan('更新日志：')}${underline('https://continew.top/admin/changelog/')}\n${cyan('持续迭代优化的，高质量多租户中后台管理系统框架')}`,
+          `${bold(green(`${bgGreen('ContiNew Admin v4.2.0-SNAPSHOT')}`))}\n${cyan('在线文档：')}${underline('https://continew.top')}\n${cyan('吐槽广场：')}${underline('https://continew.top/docs/admin/issue-hub.html')}\n${cyan('常见问题：')}${underline('https://continew.top/docs/admin/faq.html')}\n${cyan('更新日志：')}${underline('https://continew.top/docs/admin/changelog/')}\n${cyan('持续迭代优化的，高质量多租户中后台管理系统框架')}`,
           {
             padding: 1,
             margin: 1,

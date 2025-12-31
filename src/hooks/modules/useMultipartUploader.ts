@@ -100,7 +100,7 @@ export function useMultipartUploader(props: {
     if (typeof Worker !== 'undefined' && !md5Worker) {
       // eslint-disable-next-line no-console
       console.log('[Hooks] 初始化MD5 Worker...')
-      md5Worker = new Worker('/src/utils/md5-worker.ts', { type: 'module' })
+      md5Worker = new Worker(new URL('../../utils/md5-worker.ts', import.meta.url), { type: 'module' })
       md5Worker.onmessage = function (e) {
         const { type, taskId, md5, error } = e.data
 
@@ -141,9 +141,27 @@ export function useMultipartUploader(props: {
           totalTime: 0,
         }
 
-        // 根据文件大小动态调整分块和分片大小
-        const blockSize = file.size > 200 * 1024 * 1024 ? 50 * 1024 * 1024 : 25 * 1024 * 1024 // 50MB或25MB块
-        const chunkSize = file.size > 100 * 1024 * 1024 ? 10 * 1024 * 1024 : 2 * 1024 * 1024 // 10MB或2MB分片
+        // 根据文件大小动态调整分块和分片大小（优化：使用更小的分片以降低内存占用）
+        let blockSize: number
+        let chunkSize: number
+
+        if (file.size > 500 * 1024 * 1024) {
+          // 超大文件（> 500MB）
+          blockSize = 50 * 1024 * 1024 // 50MB块
+          chunkSize = 5 * 1024 * 1024 // 5MB分片
+        } else if (file.size > 100 * 1024 * 1024) {
+          // 大文件（100MB - 500MB）
+          blockSize = 30 * 1024 * 1024 // 30MB块
+          chunkSize = 3 * 1024 * 1024 // 3MB分片
+        } else if (file.size > 10 * 1024 * 1024) {
+          // 中等文件（10MB - 100MB）
+          blockSize = 10 * 1024 * 1024 // 10MB块
+          chunkSize = 1 * 1024 * 1024 // 1MB分片
+        } else {
+          // 小文件（< 10MB）
+          blockSize = 5 * 1024 * 1024 // 5MB块
+          chunkSize = 512 * 1024 // 512KB分片
+        }
 
         // eslint-disable-next-line no-console
         console.log(`[Hooks] 发送文件到Worker: ${file.name}, 大小: ${(file.size / 1024 / 1024).toFixed(2)}MB, 块大小: ${(blockSize / 1024 / 1024).toFixed(2)}MB, 分片大小: ${(chunkSize / 1024 / 1024).toFixed(2)}MB`)

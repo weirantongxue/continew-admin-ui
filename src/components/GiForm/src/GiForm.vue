@@ -199,9 +199,17 @@ const updateValue = (value: any, field: string) => {
   emit('update:modelValue', Object.assign(props.modelValue, { [field]: value }))
 }
 
+/** 必填项 */
+const isRequired = (item: ColumnItem) => {
+  if (typeof item.required === 'boolean') return item.required
+  if (typeof item.required === 'function') {
+    return item.required(props.modelValue)
+  }
+}
+
 /** 表单项校验规则 */
 const getFormItemRules = (item: ColumnItem) => {
-  if (item.required) {
+  if (isRequired(item)) {
     const defaultProps = getComponentBindProps(item)
     return [{ required: true, message: defaultProps.placeholder || `请输入${item.label}` }, ...(Array.isArray(item.rules) ? item.rules : [])]
   }

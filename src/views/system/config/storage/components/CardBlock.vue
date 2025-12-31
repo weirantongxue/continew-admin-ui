@@ -72,12 +72,12 @@
     </div>
   </a-card>
 
-  <StorageAddModal ref="StorageAddModalRef" @save-success="search" />
+  <AddModal ref="AddModalRef" @save-success="search" />
 </template>
 
 <script lang="ts" setup>
 import { Message, Modal } from '@arco-design/web-vue'
-import StorageAddModal from '../StorageAddModal.vue'
+import AddModal from '../AddModal.vue'
 import has from '@/utils/has'
 import { type StorageResp, deleteStorage, setDefaultStorage, updateStorageStatus } from '@/apis/system'
 import { useDict } from '@/hooks/app'
@@ -182,11 +182,11 @@ const onDelete = (record: StorageResp) => {
   })
 }
 
-const StorageAddModalRef = ref<InstanceType<typeof StorageAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 
 // 修改
 const onUpdate = (record: StorageResp) => {
-  StorageAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 </script>
 
@@ -250,11 +250,11 @@ const onUpdate = (record: StorageResp) => {
   }
 
   .content {
-    height: 48px;
+    height: 80px;
   }
 
   .content-large {
-    height: 78px;
+    height: 110px;
   }
 
   .extra {

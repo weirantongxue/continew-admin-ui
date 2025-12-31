@@ -1,5 +1,5 @@
 <template>
-  <GiIframe src="https://continew.top/admin/changelog/"></GiIframe>
+  <GiIframe src="https://continew.top/docs/admin/changelog/"></GiIframe>
 </template>
 
 <script lang='ts' setup>

@@ -20,13 +20,13 @@
           </a-col>
           <a-col v-bind="colProps">
             <a-form-item label="任务名称" field="jobName">
-              <a-input v-model.trim="form.jobName" placeholder="请输入任务名称" :max-length="64" show-word-limit />
+              <a-input v-model="form.jobName" placeholder="请输入任务名称" :max-length="64" show-word-limit />
             </a-form-item>
           </a-col>
         </a-row>
         <a-form-item label="描述" field="description">
           <a-textarea
-            v-model.trim="form.description"
+            v-model="form.description"
             placeholder="请输入描述"
             show-word-limit
             :max-length="200"
@@ -99,14 +99,14 @@
           </a-col>
           <a-col v-bind="colProps">
             <a-form-item label="执行器名称" field="executorInfo">
-              <a-input v-model.trim="form.executorInfo" placeholder="请输入执行器名称" :max-length="255" />
+              <a-input v-model="form.executorInfo" placeholder="请输入执行器名称" :max-length="255" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-form-item label="任务参数" field="argsStr">
           <a-textarea
             v-if="form.taskType !== 3"
-            v-model.trim="form.argsStr"
+            v-model="form.argsStr"
             placeholder="请输入任务参数"
             :auto-size="{ minRows: 3, maxRows: 5 }"
           />
@@ -134,17 +134,17 @@
         <a-row>
           <a-col v-bind="colProps">
             <a-form-item label="路由策略" field="routeKey">
-              <a-select v-model.trim="form.routeKey" placeholder="请选择路由策略" :options="job_route_strategy_enum" />
+              <a-select v-model="form.routeKey" placeholder="请选择路由策略" :options="job_route_strategy_enum" />
             </a-form-item>
           </a-col>
           <a-col v-bind="colProps">
             <a-form-item label="阻塞策略" field="blockStrategy">
-              <a-select v-model.trim="form.blockStrategy" placeholder="请选择阻塞策略" :options="job_block_strategy_enum" />
+              <a-select v-model="form.blockStrategy" placeholder="请选择阻塞策略" :options="job_block_strategy_enum" />
             </a-form-item>
           </a-col>
           <a-col v-bind="colProps">
             <a-form-item label="超时时间" field="executorTimeout">
-              <a-input-number v-model.trim="form.executorTimeout" placeholder="请输入超时时间" :min="1">
+              <a-input-number v-model="form.executorTimeout" placeholder="请输入超时时间" :min="1">
                 <template #suffix>秒</template>
               </a-input-number>
             </a-form-item>
@@ -157,7 +157,7 @@
           </a-col>
           <a-col v-bind="colProps">
             <a-form-item label="重试间隔" field="retryInterval">
-              <a-input-number v-model.trim="form.retryInterval" placeholder="请输入重试间隔" :min="1">
+              <a-input-number v-model="form.retryInterval" placeholder="请输入重试间隔" :min="1">
                 <template #suffix>
                   秒
                 </template>

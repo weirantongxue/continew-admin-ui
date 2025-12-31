@@ -6,7 +6,7 @@
     :accordion="appStore.menuAccordion"
     :breakpoint="appStore.layout === 'mix' ? 'xl' : undefined"
     :trigger-props="{ animationName: 'slide-dynamic-origin' }"
-    :collapsed="!isDesktop ? false : appStore.menuCollapse"
+    :collapsed="mode === 'vertical' && isDesktop ? appStore.menuCollapse : false"
     :style="menuStyle"
     @menu-item-click="onMenuItemClick"
     @collapse="onCollapse"
@@ -44,11 +44,7 @@ const sidebarRoutes = computed(() => (props.menus ? props.menus : routeStore.rou
 
 // 菜单垂直模式/水平模式
 const mode = computed(() => {
-  if (!['left', 'mix'].includes(appStore.layout)) {
-    return 'horizontal'
-  } else {
-    return 'vertical'
-  }
+  return ['left', 'mix', 'columns'].includes(appStore.layout) ? 'vertical' : 'horizontal'
 })
 
 // 是否默认展开选中的菜单

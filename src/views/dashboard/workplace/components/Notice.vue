@@ -12,7 +12,7 @@
       <a-skeleton-line :rows="5" />
     </a-skeleton>
     <div v-else>
-      <a-empty v-if="dataList.length === 0">暂无公告</a-empty>
+      <a-empty v-if="dataList.length === 0" />
       <div v-else>
         <div v-for="(item, idx) in dataList" :key="idx" class="item">
           <a-tag v-if="item.isTop" color="red">置顶</a-tag>

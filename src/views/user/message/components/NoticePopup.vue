@@ -126,7 +126,7 @@ const fetchNoticeDetail = async (index: number) => {
     console.error(`获取公告详情失败:`, error)
     // 创建一个错误状态的公告对象
     noticeCache.value.set(noticeId, {
-      id: noticeId,
+      id: noticeId || '',
       title: '获取公告失败',
       content: '获取公告内容失败，请稍后重试',
       createUserString: '',

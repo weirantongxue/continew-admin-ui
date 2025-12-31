@@ -87,7 +87,7 @@
         </a-dropdown>
       </a-card>
     </div>
-    <DeptAddModal ref="DeptAddModalRef" :depts="dataList" @save-success="search" />
+    <AddModal ref="AddModalRef" :depts="dataList" @save-success="search" />
   </GiPageLayout>
 </template>
 
@@ -95,7 +95,7 @@
 import 'vue3-tree-org/lib/vue3-tree-org.css'
 import { Vue3TreeOrg } from 'vue3-tree-org'
 import type { TableInstance } from '@arco-design/web-vue'
-import DeptAddModal from './DeptAddModal.vue'
+import AddModal from './AddModal.vue'
 import { type DeptQuery, type DeptResp, deleteDept, exportDept, listDept } from '@/apis/system/dept'
 import type GiTable from '@/components/GiTable/index.vue'
 import { useDownload, useTable } from '@/hooks'
@@ -196,17 +196,17 @@ const onExport = () => {
   useDownload(() => exportDept(queryForm))
 }
 
-const DeptAddModalRef = ref<InstanceType<typeof DeptAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = (parentId?: string) => {
-  DeptAddModalRef.value?.onAdd(parentId)
+  AddModalRef.value?.onAdd(parentId)
 }
 const handleAdd = (record: DeptResp) => {
   onAdd(record.id)
 }
 // 修改
 const onUpdate = (record: DeptResp) => {
-  DeptAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 </script>
 

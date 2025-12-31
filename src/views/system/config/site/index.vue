@@ -74,20 +74,20 @@
           </template>
         </a-form-item>
         <a-form-item class="input-item" field="SITE_TITLE" :label="siteConfig.SITE_TITLE.name" :help="siteConfig.SITE_TITLE.description">
-          <a-input v-model.trim="form.SITE_TITLE" placeholder="请输入系统名称" :max-length="18" show-word-limit />
+          <a-input v-model="form.SITE_TITLE" placeholder="请输入系统名称" :max-length="18" show-word-limit />
         </a-form-item>
         <a-form-item class="input-item" field="SITE_DESCRIPTION" :label="siteConfig.SITE_DESCRIPTION.name" :help="siteConfig.SITE_DESCRIPTION.description">
           <a-textarea
-            v-model.trim="form.SITE_DESCRIPTION"
+            v-model="form.SITE_DESCRIPTION"
             placeholder="请输入系统描述"
             :auto-size="{ minRows: 1, maxRows: 3 }"
           />
         </a-form-item>
         <a-form-item class="input-item" field="SITE_COPYRIGHT" :label="siteConfig.SITE_COPYRIGHT.name" :help="siteConfig.SITE_COPYRIGHT.description">
-          <a-input v-model.trim="form.SITE_COPYRIGHT" placeholder="请输入版权声明" />
+          <a-input v-model="form.SITE_COPYRIGHT" placeholder="请输入版权声明" />
         </a-form-item>
         <a-form-item field="SITE_BEIAN" :label="siteConfig.SITE_BEIAN.name" :help="siteConfig.SITE_BEIAN.description">
-          <a-input v-model.trim="form.SITE_BEIAN" placeholder="请输入备案号" :max-length="30" show-word-limit />
+          <a-input v-model="form.SITE_BEIAN" placeholder="请输入备案号" :max-length="30" show-word-limit />
         </a-form-item>
         <a-space style="margin-top: 16px">
           <a-button v-if="!isUpdate" v-permission="['system:siteConfig:update']" type="primary" @click="onUpdate">

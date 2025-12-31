@@ -32,7 +32,7 @@
       <a-row>
         <a-col v-bind="colProps">
           <a-form-item label="菜单标题" field="title">
-            <a-input v-model.trim="form.title" placeholder="请输入菜单标题" :max-length="30" show-word-limit allow-clear />
+            <a-input v-model="form.title" placeholder="请输入菜单标题" :max-length="30" show-word-limit allow-clear />
           </a-form-item>
         </a-col>
         <a-col v-bind="colProps">
@@ -40,22 +40,22 @@
             <GiIconSelector v-model="form.icon" />
           </a-form-item>
           <a-form-item v-else label="权限标识" field="permission">
-            <a-input v-model.trim="form.permission" placeholder="system:user:add" :max-length="100" show-word-limit allow-clear />
+            <a-input v-model="form.permission" placeholder="system:user:add" :max-length="100" show-word-limit allow-clear />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row>
         <a-col v-bind="colProps">
           <a-form-item v-if="[1, 2].includes(form.type)" label="路由地址" field="path">
-            <a-input v-model.trim="form.path" placeholder="请输入路由地址" allow-clear />
+            <a-input v-model="form.path" placeholder="请输入路由地址" allow-clear />
           </a-form-item>
         </a-col>
         <a-col v-bind="colProps">
           <a-form-item v-if="form.type === 1 || (form.type === 2 && !form.isExternal)" label="重定向" field="redirect">
-            <a-input v-model.trim="form.redirect" placeholder="请输入重定向地址" allow-clear />
+            <a-input v-model="form.redirect" placeholder="请输入重定向地址" allow-clear />
           </a-form-item>
           <a-form-item v-if="form.type === 2 && form.isExternal" label="组件路径" field="component">
-            <a-input v-model.trim="form.component" placeholder="请输入组件路径" allow-clear />
+            <a-input v-model="form.component" placeholder="请输入组件路径" allow-clear />
           </a-form-item>
         </a-col>
       </a-row>
@@ -69,7 +69,7 @@
       <a-row>
         <a-col v-bind="colProps">
           <a-form-item v-if="form.type === 1 || (form.type === 2 && !form.isExternal)" label="组件名称" field="name">
-            <a-input v-model.trim="form.name" placeholder="请输入组件名称" :max-length="50" show-word-limit allow-clear />
+            <a-input v-model="form.name" placeholder="请输入组件名称" :max-length="50" show-word-limit allow-clear />
             <template #extra>
               <div v-if="componentName">
                 <span>建议组件名称：</span>
@@ -80,7 +80,7 @@
         </a-col>
         <a-col v-bind="colProps">
           <a-form-item v-if="form.type === 2" label="权限标识" field="permission">
-            <a-input v-model.trim="form.permission" placeholder="system:user:add" :max-length="100" show-word-limit allow-clear />
+            <a-input v-model="form.permission" placeholder="system:user:add" :max-length="100" show-word-limit allow-clear />
           </a-form-item>
         </a-col>
       </a-row>

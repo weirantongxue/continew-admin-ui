@@ -8,7 +8,14 @@
     @before-ok="save"
     @close="reset"
   >
-    <GiForm ref="formRef" v-model="form" :columns="columns" />
+    <GiForm ref="formRef" v-model="form" :columns="columns">
+      <template #secretKey>
+        <a-input
+          v-model="form.secretKey"
+          :placeholder="isUpdate ? '保持 Secret Key 为空将不更改' : '请输入 Secret Key'"
+        />
+      </template>
+    </GiForm>
   </a-modal>
 </template>
 
@@ -37,6 +44,8 @@ const { storage_type_enum } = useDict('storage_type_enum')
 
 const [form, resetForm] = useResetReactive({
   type: 2,
+  recycleBinEnabled: true,
+  recycleBinPath: '.RECYCLE.BIN/',
   isDefault: false,
   sort: 999,
   status: 2,
@@ -77,7 +86,7 @@ const columns: ColumnItem[] = reactive([
     field: 'secretKey',
     type: 'input',
     span: 24,
-    required: true,
+    required: () => !isUpdate.value,
     show: () => form.type === 2,
   },
   {
@@ -119,6 +128,29 @@ const columns: ColumnItem[] = reactive([
     span: 24,
     required: true,
     show: () => form.type === 1,
+  },
+  {
+    label: '启用回收站',
+    field: 'recycleBinEnabled',
+    type: 'switch',
+    span: 24,
+    props: {
+      type: 'round',
+      checkedValue: true,
+      uncheckedValue: false,
+      checkedText: '启用',
+      uncheckedText: '禁用',
+    },
+    disabled: () => isUpdate.value,
+  },
+  {
+    label: '回收站路径',
+    field: 'recycleBinPath',
+    type: 'input',
+    span: 24,
+    required: true,
+    show: () => form.recycleBinEnabled,
+    disabled: () => isUpdate.value,
   },
   {
     label: '排序',
@@ -165,7 +197,7 @@ const save = async () => {
     if (isUpdate.value) {
       await updateStorage({
         ...form,
-        secretKey: form.type === 2 && !form.secretKey.includes('*') ? encryptByRsa(form.secretKey) || '' : null,
+        secretKey: form.type === 2 && form.secretKey ? encryptByRsa(form.secretKey) || '' : null,
       }, dataId.value)
       Message.success('修改成功')
     } else {

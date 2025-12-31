@@ -40,9 +40,9 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           source: ./dist/*
-          target: /tmp/html
+          target: ${{ secrets.SERVER_TMP_PATH }}
           strip_components: 1
-      # 7、重启 Nginx
+      # 7、更新部署文件
       - name: Restart
         uses: appleboy/ssh-action@master
         with:
@@ -52,5 +52,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             rm -rf ${{ secrets.SERVER_PATH }}/*
-            mv /tmp/html/* ${{ secrets.SERVER_PATH }}
+            mv ${{ secrets.SERVER_TMP_PATH }}/* ${{ secrets.SERVER_PATH }}
             chmod -R 777 ${{ secrets.SERVER_PATH }}

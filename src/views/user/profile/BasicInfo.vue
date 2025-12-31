@@ -17,7 +17,11 @@
           </template>
         </a-upload>
         <div class="name">
-          <span style="margin-right: 10px">{{ userInfo.nickname }}</span>
+          <span style="margin-right: 10px">
+            {{ userInfo.nickname }}
+            <icon-man v-if="userInfo.gender === 1" style="color: #19bbf1" />
+            <icon-woman v-else-if="userInfo.gender === 2" style="color: #fa7fa9" />
+          </span>
           <icon-edit :size="16" class="btn" @click="onUpdate" />
         </div>
         <div class="id">
@@ -30,8 +34,6 @@
           <a-descriptions-item :span="4">
             <template #label> <icon-user /><span style="margin-left: 5px">用户名</span></template>
             {{ userInfo.username }}
-            <icon-man v-if="userInfo.gender === 1" style="color: #19bbf1" />
-            <icon-woman v-else-if="userInfo.gender === 2" style="color: #fa7fa9" />
           </a-descriptions-item>
           <a-descriptions-item :span="4">
             <template #label> <icon-phone /><span style="margin-left: 5px">手机</span></template>

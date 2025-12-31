@@ -90,14 +90,14 @@
       </template>
     </GiTable>
 
-    <MenuAddModal ref="MenuAddModalRef" :menus="dataList" @save-success="search" />
+    <AddModal ref="AddModalRef" :menus="dataList" @save-success="search" />
   </GiPageLayout>
 </template>
 
 <script setup lang="ts">
 import type { TableInstance } from '@arco-design/web-vue'
 import { Message, Modal } from '@arco-design/web-vue'
-import MenuAddModal from './MenuAddModal.vue'
+import AddModal from './AddModal.vue'
 import { type MenuResp, clearMenuCache, deleteMenu, listMenu } from '@/apis/system/menu'
 import type GiTable from '@/components/GiTable/index.vue'
 import { useTable } from '@/hooks'
@@ -209,15 +209,15 @@ const onExpanded = () => {
   tableRef.value?.tableRef?.expandAll(isExpanded.value)
 }
 
-const MenuAddModalRef = ref<InstanceType<typeof MenuAddModal>>()
+const AddModalRef = ref<InstanceType<typeof AddModal>>()
 // 新增
 const onAdd = (parentId?: string) => {
-  MenuAddModalRef.value?.onAdd(parentId)
+  AddModalRef.value?.onAdd(parentId)
 }
 
 // 修改
 const onUpdate = (record: MenuResp) => {
-  MenuAddModalRef.value?.onUpdate(record.id)
+  AddModalRef.value?.onUpdate(record.id)
 }
 </script>
 
