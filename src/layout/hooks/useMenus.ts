@@ -1,8 +1,11 @@
+import type { CSSProperties } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { computed } from 'vue'
 import { eachTree } from 'xe-utils'
-import { useRouteStore } from '@/stores'
+import { useDevice, useRouteListener } from '@/hooks'
+import { useAppStore, useRouteStore } from '@/stores'
 import { filterTree } from '@/utils'
+import { isExternal } from '@/utils/validate'
 
 /**
  * 菜单管理 Hooks
@@ -11,8 +14,30 @@ import { filterTree } from '@/utils'
  * @returns {object} 包含处理后菜单列表的响应式对象
  */
 export function useMenu() {
+  const router = useRouter()
   // 路由存储实例，用于获取原始路由配置
   const routeStore = useRouteStore()
+  const appStore = useAppStore()
+  const { listenerRouteChange } = useRouteListener()
+  const { isDesktop } = useDevice()
+
+  // 是否折叠菜单
+  const collapsed = computed(() =>
+    !isDesktop.value ? false : appStore.menuCollapse,
+  )
+
+  // 菜单触发器配置
+  const menuTriggerProps = {
+    animationName: 'slide-dynamic-origin',
+  }
+
+  // 菜单主题
+  const menuTheme = computed(() => appStore.menuDark ? 'dark' : 'light')
+
+  // 获取菜单样式
+  const getMenuStyle = computed(() => {
+    return { backgroundColor: menuTheme.value === 'dark' ? 'var(--color-menu-dark-bg)' : 'var(--color-menu-light-bg)' } as CSSProperties
+  })
 
   /**
    * 处理后的菜单列表
@@ -36,7 +61,6 @@ export function useMenu() {
       if (i?.children?.length === 1 && i?.meta?.alwaysShow !== true) {
         if (i.meta) {
           i.meta.title = i.meta?.title || i.children?.[0]?.meta?.title
-          i.meta.svgIcon = i.meta?.svgIcon || i.children?.[0]?.meta?.svgIcon
           i.meta.icon = i.meta?.icon || i.children?.[0]?.meta?.icon
         }
         i.path = i.children?.[0]?.path
@@ -46,7 +70,32 @@ export function useMenu() {
     return showMenuList
   })
 
+  const selectedKeys = ref<string[]>([])
+
+  function handleMenuItemClick(key: string) {
+    if (isExternal(key)) {
+      window.open(key)
+      return
+    }
+    selectedKeys.value = [key]
+    router.push({ path: key })
+  }
+
+  listenerRouteChange(({ to }) => {
+    if (to?.meta?.activeMenu) {
+      selectedKeys.value = [to.meta.activeMenu]
+      return
+    }
+    selectedKeys.value = [to.path]
+  })
+
   return {
+    menuTheme,
+    getMenuStyle,
     menuList,
+    menuTriggerProps,
+    selectedKeys,
+    collapsed,
+    handleMenuItemClick,
   }
 }
